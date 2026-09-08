@@ -135,21 +135,22 @@ export function HeaderMenu({
     <nav
       className={
         viewport === 'mobile'
-          ? 'flex flex-col gap-[var(--df-space-2)]'
+          ? 'flex flex-col'
           : 'flex gap-[var(--df-space-6)]'
       }
       aria-label="Primary"
     >
-      <NavLink to="/" onClick={close} prefetch="intent" className="touch-target flex items-center">
-        Home
-      </NavLink>
-      {config.navigation.header.map((item) => (
+      {[{label: 'Home', href: '/'}, ...config.navigation.header].map((item) => (
         <NavLink
           key={item.href}
           to={item.href}
           onClick={close}
           prefetch="intent"
-          className="touch-target flex items-center"
+          className={
+            viewport === 'mobile'
+              ? 'touch-target flex items-center border-b border-[color:var(--df-color-hairline)] py-[var(--df-space-3)] text-[length:var(--df-size-lg)] last:border-0'
+              : 'touch-target flex items-center'
+          }
         >
           {item.label}
         </NavLink>

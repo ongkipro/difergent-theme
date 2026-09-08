@@ -491,3 +491,42 @@ text, so the swap never gates it.
 fallback stack: 48px in Instrument Serif against 59px in Georgia. A face can
 download and still not be applied, so `document.fonts.check` alone is not
 evidence. It also asserts no font request was blocked.
+
+## 2026-09-08 — Three overlay surfaces, and a lazy-loaded LCP element
+
+The menu, the cart and search all used the same right-hand drawer. They now
+differ by what they are for: the menu rises as a bottom sheet, the cart is a
+sheet on a phone and a right panel from `sm`, and search is a centred modal with
+a pinned field, `Cmd+K`, and results that scroll beneath it.
+
+### The product page was over budget, and had been for a while
+
+Three runs on a quiet machine put the product page at LCP 2.8s against a 2.5s
+budget. The cause was not the new surfaces: `ProductImage` never set a loading
+attribute, so Hydrogen's `Image` lazy-loaded it. The single largest element on
+the page, the one the score is measured on, was at the back of the queue. Setting
+`loading="eager"` brings it to 2.3s across three runs, a 500ms improvement.
+
+`fetchPriority` does not survive Hydrogen's `Image`; it never reaches the markup.
+`loading` does, and it carries the fix on its own.
+
+### Defects found by reading the rendered surface
+
+- the search field carried a `list` attribute, so Chrome drew its own dropdown
+  arrow inside a designed field and opened a list we cannot style. Suggestions
+  are now our own chips, which also let them move below the products
+- result rows had no fixed media box, so five products rendered as a ragged
+  column of different heights
+- restyling the native search clear button needs a `data:` URI mask, which the
+  Content Security Policy rejects. It cost best practices 8 points before it was
+  caught. The button is hidden instead; the modal's own close covers the need
+
+### Verification
+
+| Surface | Performance | Accessibility | Best practices | SEO | LCP |
+|---|---|---|---|---|---|
+| Home | 97 | 100 | 100 | 100 | 2.1s |
+| Product | 96 | 100 | 100 | 100 | 2.3s |
+
+Header 7 of 7 widths, cart page 6 of 6, fonts 4 of 4, and every width from 320
+to 1440 with no overflow, zoom unlocked and no control under 44px.

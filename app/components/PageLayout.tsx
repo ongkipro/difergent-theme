@@ -57,7 +57,7 @@ export function PageLayout({
 
 function CartAside({cart}: {cart: PageLayoutProps['cart']}) {
   return (
-    <Aside type="cart" heading="CART">
+    <Aside type="cart" heading="Cart" variant="drawer">
       <Suspense fallback={<p>Loading cart ...</p>}>
         <Await resolve={cart}>
           {(cart) => {
@@ -72,32 +72,40 @@ function CartAside({cart}: {cart: PageLayoutProps['cart']}) {
 function SearchAside() {
   const queriesDatalistId = useId();
   return (
-    <Aside type="search" heading="SEARCH">
+    <Aside type="search" heading="Search" variant="modal">
       <div>
+        <div className="sticky -top-[var(--df-space-4)] z-10 -mx-[var(--df-space-4)] bg-[color:var(--df-color-surface)] px-[var(--df-space-4)] pb-[var(--df-space-3)] pt-[var(--df-space-1)]">
         <SearchFormPredictive>
           {({fetchResults, goToSearch, inputRef}) => (
-            <div className="flex gap-[var(--df-space-2)]">
-              <input
-                name="q"
-                onChange={fetchResults}
-                onFocus={fetchResults}
-                placeholder="Search"
-                aria-label="Search products"
-                ref={inputRef}
-                type="search"
-                list={queriesDatalistId}
-                className="touch-target w-full flex-1 px-[var(--df-space-3)]"
-              />
-              <button
-                type="button"
-                onClick={goToSearch}
-                className="touch-target inline-flex shrink-0 items-center justify-center rounded-[var(--df-radius-md)] bg-[color:var(--df-color-accent)] px-[var(--df-space-4)] text-[color:var(--df-color-on-accent)]"
-              >
-                Search
-              </button>
-            </div>
+            <>
+              <div className="relative">
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute left-[var(--df-space-3)] top-1/2 -translate-y-1/2 text-[color:var(--df-color-ink-muted)]"
+                >
+                  <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <circle cx="9" cy="9" r="6" />
+                    <path d="M13.5 13.5 17 17" strokeLinecap="round" />
+                  </svg>
+                </span>
+                <input
+                  name="q"
+                  onChange={fetchResults}
+                  onFocus={fetchResults}
+                  placeholder="Search products"
+                  aria-label="Search products"
+                  ref={inputRef}
+                  type="search"
+                  className="h-12 w-full rounded-[var(--df-radius-md)] border border-[color:var(--df-color-border-control)] bg-[color:var(--df-color-canvas)] pl-[var(--df-space-8)] pr-[var(--df-space-3)] text-[length:var(--df-size-lg)]"
+                />
+              </div>
+              <p className="mt-[var(--df-space-2)] hidden text-[length:var(--df-size-xs)] text-[color:var(--df-color-ink-muted)] sm:block">
+                Press Esc to close
+              </p>
+            </>
           )}
         </SearchFormPredictive>
+        </div>
 
         <SearchResultsPredictive>
           {({items, total, term, state, closeSearch}) => {
@@ -113,14 +121,14 @@ function SearchAside() {
 
             return (
               <>
-                <SearchResultsPredictive.Queries
-                  queries={queries}
-                  queriesDatalistId={queriesDatalistId}
-                />
                 <SearchResultsPredictive.Products
                   products={products}
                   closeSearch={closeSearch}
                   term={term}
+                />
+                <SearchResultsPredictive.Queries
+                  queries={queries}
+                  queriesDatalistId={queriesDatalistId}
                 />
                 <SearchResultsPredictive.Collections
                   collections={collections}
@@ -141,11 +149,9 @@ function SearchAside() {
                   <Link
                     onClick={closeSearch}
                     to={`${SEARCH_ENDPOINT}?q=${term.current}`}
+                    className="touch-target mt-[var(--df-space-2)] flex w-full items-center justify-center rounded-[var(--df-radius-md)] border border-[color:var(--df-color-border-control)] px-[var(--df-space-4)] py-[var(--df-space-3)] text-[length:var(--df-size-sm)]"
                   >
-                    <p>
-                      View all results for <q>{term.current}</q>
-                      &nbsp; →
-                    </p>
+                    See all {total} results for &ldquo;{term.current}&rdquo;
                   </Link>
                 ) : null}
               </>
@@ -167,7 +173,7 @@ function MobileMenuAside({
   return (
     header.menu &&
     header.shop.primaryDomain?.url && (
-      <Aside type="mobile" heading="MENU">
+      <Aside type="mobile" heading="Menu" variant="sheet">
         <HeaderMenu
           menu={header.menu}
           viewport="mobile"

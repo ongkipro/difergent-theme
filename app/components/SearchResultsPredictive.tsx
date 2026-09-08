@@ -101,17 +101,21 @@ function SearchResultsPredictiveArticles({
           return (
             <li className="border-b border-[color:var(--df-color-hairline)] last:border-0" key={article.id}>
               <Link className="touch-target flex items-center gap-[var(--df-space-3)] py-[var(--df-space-2)]" onClick={closeSearch} to={articleUrl}>
-                {article.image?.url && (
-                  <Image
-                    alt={article.image.altText ?? ''}
-                    src={article.image.url}
-                    width={50}
-                    height={50}
-                  />
-                )}
-                <div>
-                  <span>{article.title}</span>
-                </div>
+                {/* One fixed square per row, whatever shape the image is. */}
+                <span className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-[var(--df-radius-sm)] bg-[color:var(--df-color-raised)]">
+                  {article.image?.url ? (
+                    <Image
+                      alt={article.image.altText ?? ''}
+                      src={article.image.url}
+                      width={56}
+                      height={56}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : null}
+                </span>
+                <span className="min-w-0 flex-1 truncate text-[length:var(--df-size-sm)]">
+                  {article.title}
+                </span>
               </Link>
             </li>
           );
@@ -142,17 +146,21 @@ function SearchResultsPredictiveCollections({
           return (
             <li className="border-b border-[color:var(--df-color-hairline)] last:border-0" key={collection.id}>
               <Link className="touch-target flex items-center gap-[var(--df-space-3)] py-[var(--df-space-2)]" onClick={closeSearch} to={collectionUrl}>
-                {collection.image?.url && (
-                  <Image
-                    alt={collection.image.altText ?? ''}
-                    src={collection.image.url}
-                    width={50}
-                    height={50}
-                  />
-                )}
-                <div>
-                  <span>{collection.title}</span>
-                </div>
+                {/* One fixed square per row, whatever shape the image is. */}
+                <span className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-[var(--df-radius-sm)] bg-[color:var(--df-color-raised)]">
+                  {collection.image?.url ? (
+                    <Image
+                      alt={collection.image.altText ?? ''}
+                      src={collection.image.url}
+                      width={56}
+                      height={56}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : null}
+                </span>
+                <span className="min-w-0 flex-1 truncate text-[length:var(--df-size-sm)]">
+                  {collection.title}
+                </span>
               </Link>
             </li>
           );
@@ -205,7 +213,7 @@ function SearchResultsPredictiveProducts({
   return (
     <div className="mb-[var(--df-space-6)]" key="products">
       <h3 className="mb-[var(--df-space-2)] text-[length:var(--df-size-sm)] uppercase tracking-wide text-[color:var(--df-color-ink-muted)]">Products</h3>
-      <ul>
+      <ul className="m-0 list-none p-0">
         {products.map((product) => {
           const productUrl = urlWithTrackingParams({
             baseUrl: `/products/${product.handle}`,
@@ -217,19 +225,38 @@ function SearchResultsPredictiveProducts({
           const image = product?.selectedOrFirstAvailableVariant?.image;
           return (
             <li className="border-b border-[color:var(--df-color-hairline)] last:border-0" key={product.id}>
-              <Link to={productUrl} onClick={closeSearch}>
-                {image && (
-                  <Image
-                    alt={image.altText ?? ''}
-                    src={image.url}
-                    width={50}
-                    height={50}
-                  />
-                )}
-                <div>
-                  <p>{product.title}</p>
-                  <small>{price && <Money data={price} as="span" />}</small>
-                </div>
+              <Link
+                to={productUrl}
+                onClick={closeSearch}
+                className="flex items-center gap-[var(--df-space-3)] py-[var(--df-space-2)]"
+              >
+                {/* A fixed square keeps every row the same height whatever
+                    shape the merchant's photography happens to be. */}
+                <span className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-[var(--df-radius-sm)] bg-[color:var(--df-color-raised)]">
+                  {image ? (
+                    <Image
+                      alt={image.altText ?? ''}
+                      src={image.url}
+                      width={56}
+                      height={56}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <img
+                      src="/placeholders/product.svg"
+                      alt=""
+                      className="h-full w-full object-cover"
+                    />
+                  )}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-[length:var(--df-size-sm)] text-[color:var(--df-color-ink)]">
+                    {product.title}
+                  </span>
+                  <span className="block text-[length:var(--df-size-sm)] text-[color:var(--df-color-ink-strong)]">
+                    {price && <Money data={price} as="span" />}
+                  </span>
+                </span>
               </Link>
             </li>
           );
@@ -247,14 +274,33 @@ function SearchResultsPredictiveQueries({
 }) {
   if (!queries.length) return null;
 
+  /*
+    Styled suggestions rather than a native datalist. The datalist draws the
+    browser's own dropdown arrow inside the field and opens a list we cannot
+    style, which reads as an artefact beside our own results. These are links,
+    so a suggestion goes straight to the full results for it.
+  */
   return (
-    <datalist id={queriesDatalistId}>
-      {queries.map((suggestion) => {
-        if (!suggestion) return null;
-
-        return <option key={suggestion.text} value={suggestion.text} />;
-      })}
-    </datalist>
+    <div className="mb-[var(--df-space-6)]" id={queriesDatalistId}>
+      <h3 className="mb-[var(--df-space-2)] text-[length:var(--df-size-sm)] uppercase tracking-wide text-[color:var(--df-color-ink-muted)]">
+        Suggestions
+      </h3>
+      <ul className="m-0 flex list-none flex-wrap gap-[var(--df-space-2)] p-0">
+        {queries.slice(0, 4).map((suggestion) => {
+          if (!suggestion) return null;
+          return (
+            <li key={suggestion.text}>
+              <Link
+                to={`/search?q=${encodeURIComponent(suggestion.text)}`}
+                className="touch-target inline-flex items-center rounded-[var(--df-radius-pill)] border border-[color:var(--df-color-border-control)] px-[var(--df-space-4)] text-[length:var(--df-size-sm)]"
+              >
+                {suggestion.text}
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
   );
 }
 

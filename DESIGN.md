@@ -278,6 +278,33 @@ so it separates from the icon beneath it, and it caps at `99+`. The accessible
 name carries the count in words; the badge itself is hidden from assistive
 technology to avoid announcing the number twice.
 
+## Overlay surfaces
+
+Three surfaces, three shapes, because they answer different questions.
+
+**The menu is a sheet.** It rises from the bottom edge, where a thumb already
+is. A grabber bar above the heading says so before anyone touches it.
+
+**The cart is a sheet on a phone and a right-hand panel from `sm`.** It is a
+working surface: on a narrow screen it belongs under the thumb, on a wide one it
+belongs beside the page it was opened from, so the buyer can still see what they
+were looking at.
+
+**Search is a centred modal.** A question is not a place. It sits over the page
+rather than beside it, returns the reader where they were, and opens on
+`Cmd+K` as well as the visible control. The field stays pinned while results
+scroll, which is what makes it read as a command surface rather than a form.
+
+Result rows carry a fixed square thumbnail whatever shape the merchant's
+photography is, so a list of five products is five rows of equal height rather
+than a ragged column. Products come first and query suggestions after: a shopper
+wants the thing, not a rephrasing of what they typed.
+
+Opening a surface moves focus to its input when it has one, and to the panel
+itself when it does not. Focusing the first link instead paints a focus ring on
+a menu item nobody chose, which reads as a defect to a pointer user while
+helping no one.
+
 ## Accessibility Notes
 
 Contrast computed against `--color-canvas` `#FBFAF8`:

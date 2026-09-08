@@ -52,6 +52,26 @@
     outline-offset: 2px;
   }
 
+  /*
+    Chrome draws its own decorations inside a search input: a datalist arrow and
+    a clear cross, both in the browser's blue. They are not ours and they read
+    as artefacts next to a designed field.
+  */
+  input[type='search']::-webkit-calendar-picker-indicator,
+  input[type='search']::-webkit-search-decoration {
+    display: none;
+  }
+
+  /*
+    Hidden rather than restyled. Restyling it needs a data: URI mask, and that
+    is a Content Security Policy violation for the sake of a control the modal's
+    own close button already covers.
+  */
+  input[type='search']::-webkit-search-cancel-button {
+    appearance: none;
+    display: none;
+  }
+
   :where(input, select, textarea) {
     border: 1px solid var(--df-color-border-control);
     border-radius: var(--df-radius-sm);
