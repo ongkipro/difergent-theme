@@ -45,7 +45,7 @@ export function CartMain({layout, cart: originalCart}: CartMainProps) {
   const withDiscount =
     cart &&
     Boolean(cart?.discountCodes?.filter((code) => code.applicable)?.length);
-  const className = `cart-main ${withDiscount ? 'with-discount' : ''}`;
+  const className = layout === 'page' ? 'max-w-[720px]' : 'flex h-full flex-col';
   const cartHasItems = cart?.totalQuantity ? cart.totalQuantity > 0 : false;
   const childrenMap = getLineItemChildrenMap(cart?.lines?.nodes ?? []);
 
@@ -59,8 +59,8 @@ export function CartMain({layout, cart: originalCart}: CartMainProps) {
         <p id="cart-lines" className="sr-only">
           Line items
         </p>
-        <div>
-          <ul aria-labelledby="cart-lines">
+        <div className={layout === 'aside' ? 'flex-1' : ''}>
+          <ul aria-labelledby="cart-lines" className="m-0 list-none p-0">
             {(cart?.lines?.nodes ?? []).map((line) => {
               // we do not render non-parent lines at the root of the cart
               if (
@@ -94,13 +94,10 @@ function CartEmpty({
 }) {
   const {close} = useAside();
   return (
-    <div hidden={hidden}>
-      <br />
-      <p>
-        Looks like you haven&rsquo;t added anything yet, let&rsquo;s get you
-        started!
+    <div hidden={hidden} className="py-[var(--df-space-8)]">
+      <p className="max-w-[42ch] text-[color:var(--df-color-ink-muted)]">
+        Your cart is empty. Browse the collections to find something.
       </p>
-      <br />
       <Link
         to="/collections"
         onClick={close}

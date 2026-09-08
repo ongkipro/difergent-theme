@@ -88,8 +88,8 @@ function SearchResultsPredictiveArticles({
   if (!articles.length) return null;
 
   return (
-    <div className="predictive-search-result" key="articles">
-      <h5>Articles</h5>
+    <div className="mb-[var(--df-space-6)]" key="articles">
+      <h3 className="mb-[var(--df-space-2)] text-[length:var(--df-size-sm)] uppercase tracking-wide text-[color:var(--df-color-ink-muted)]">Articles</h3>
       <ul>
         {articles.map((article) => {
           const articleUrl = urlWithTrackingParams({
@@ -99,8 +99,8 @@ function SearchResultsPredictiveArticles({
           });
 
           return (
-            <li className="predictive-search-result-item" key={article.id}>
-              <Link onClick={closeSearch} to={articleUrl}>
+            <li className="border-b border-[color:var(--df-color-hairline)] last:border-0" key={article.id}>
+              <Link className="touch-target flex items-center gap-[var(--df-space-3)] py-[var(--df-space-2)]" onClick={closeSearch} to={articleUrl}>
                 {article.image?.url && (
                   <Image
                     alt={article.image.altText ?? ''}
@@ -129,8 +129,8 @@ function SearchResultsPredictiveCollections({
   if (!collections.length) return null;
 
   return (
-    <div className="predictive-search-result" key="collections">
-      <h5>Collections</h5>
+    <div className="mb-[var(--df-space-6)]" key="collections">
+      <h3 className="mb-[var(--df-space-2)] text-[length:var(--df-size-sm)] uppercase tracking-wide text-[color:var(--df-color-ink-muted)]">Collections</h3>
       <ul>
         {collections.map((collection) => {
           const collectionUrl = urlWithTrackingParams({
@@ -140,8 +140,8 @@ function SearchResultsPredictiveCollections({
           });
 
           return (
-            <li className="predictive-search-result-item" key={collection.id}>
-              <Link onClick={closeSearch} to={collectionUrl}>
+            <li className="border-b border-[color:var(--df-color-hairline)] last:border-0" key={collection.id}>
+              <Link className="touch-target flex items-center gap-[var(--df-space-3)] py-[var(--df-space-2)]" onClick={closeSearch} to={collectionUrl}>
                 {collection.image?.url && (
                   <Image
                     alt={collection.image.altText ?? ''}
@@ -170,8 +170,8 @@ function SearchResultsPredictivePages({
   if (!pages.length) return null;
 
   return (
-    <div className="predictive-search-result" key="pages">
-      <h5>Pages</h5>
+    <div className="mb-[var(--df-space-6)]" key="pages">
+      <h3 className="mb-[var(--df-space-2)] text-[length:var(--df-size-sm)] uppercase tracking-wide text-[color:var(--df-color-ink-muted)]">Pages</h3>
       <ul>
         {pages.map((page) => {
           const pageUrl = urlWithTrackingParams({
@@ -181,8 +181,8 @@ function SearchResultsPredictivePages({
           });
 
           return (
-            <li className="predictive-search-result-item" key={page.id}>
-              <Link onClick={closeSearch} to={pageUrl}>
+            <li className="border-b border-[color:var(--df-color-hairline)] last:border-0" key={page.id}>
+              <Link className="touch-target flex items-center gap-[var(--df-space-3)] py-[var(--df-space-2)]" onClick={closeSearch} to={pageUrl}>
                 <div>
                   <span>{page.title}</span>
                 </div>
@@ -203,8 +203,8 @@ function SearchResultsPredictiveProducts({
   if (!products.length) return null;
 
   return (
-    <div className="predictive-search-result" key="products">
-      <h5>Products</h5>
+    <div className="mb-[var(--df-space-6)]" key="products">
+      <h3 className="mb-[var(--df-space-2)] text-[length:var(--df-size-sm)] uppercase tracking-wide text-[color:var(--df-color-ink-muted)]">Products</h3>
       <ul>
         {products.map((product) => {
           const productUrl = urlWithTrackingParams({
@@ -216,7 +216,7 @@ function SearchResultsPredictiveProducts({
           const price = product?.selectedOrFirstAvailableVariant?.price;
           const image = product?.selectedOrFirstAvailableVariant?.image;
           return (
-            <li className="predictive-search-result-item" key={product.id}>
+            <li className="border-b border-[color:var(--df-color-hairline)] last:border-0" key={product.id}>
               <Link to={productUrl} onClick={closeSearch}>
                 {image && (
                   <Image

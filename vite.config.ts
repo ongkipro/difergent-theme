@@ -62,6 +62,12 @@ export default defineConfig({
     },
   },
   server: {
-    allowedHosts: ['.tryhydrogen.dev'],
+    allowedHosts: [
+      '.tryhydrogen.dev',
+      // Tailscale. Reaching the dev server from a phone on the tailnet is how
+      // the in-app browser path gets tested on real hardware, which no
+      // emulator substitutes for.
+      '.ts.net',
+    ],
   },
 });

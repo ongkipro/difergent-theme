@@ -37,18 +37,23 @@ export function CartLineItem({
   return (
     <li key={id} className="border-b border-[color:var(--df-color-hairline)] py-[var(--df-space-4)] last:border-0">
       <div className="flex gap-[var(--df-space-3)]">
-        {image && (
-          <Image
-            alt={title}
-            aspectRatio="1/1"
-            data={image}
-            height={100}
-            loading="lazy"
-            width={100}
-          />
+        {image ? (
+          <Link to={lineItemUrl} className="shrink-0" tabIndex={-1} aria-hidden>
+            <Image
+              alt={title}
+              aspectRatio="1/1"
+              data={image}
+              height={88}
+              loading="lazy"
+              width={88}
+              className="h-[88px] w-[88px] rounded-[var(--df-radius-sm)] bg-[color:var(--df-color-raised)] object-cover"
+            />
+          </Link>
+        ) : (
+          <div className="h-[88px] w-[88px] shrink-0 rounded-[var(--df-radius-sm)] bg-[color:var(--df-color-raised)]" />
         )}
 
-        <div>
+        <div className="min-w-0 flex-1">
           <Link
             prefetch="intent"
             to={lineItemUrl}
@@ -58,20 +63,22 @@ export function CartLineItem({
               }
             }}
           >
-            <p>
-              <strong>{product.title}</strong>
-            </p>
+            <span className="flex min-h-[44px] items-center text-[length:var(--df-size-sm)] text-[color:var(--df-color-ink)]">
+              {product.title}
+            </span>
           </Link>
-          <ProductPrice price={line?.cost?.totalAmount} />
-          <ul>
-            {selectedOptions.map((option) => (
-              <li key={option.name}>
-                <small>
+          <div className="mt-[var(--df-space-1)] text-[length:var(--df-size-base)] text-[color:var(--df-color-ink-strong)]">
+            <ProductPrice price={line?.cost?.totalAmount} />
+          </div>
+          {selectedOptions.length > 0 ? (
+            <ul className="mt-[var(--df-space-1)] flex flex-wrap gap-x-[var(--df-space-3)] text-[length:var(--df-size-xs)] text-[color:var(--df-color-ink-muted)]">
+              {selectedOptions.map((option) => (
+                <li key={option.name}>
                   {option.name}: {option.value}
-                </small>
-              </li>
-            ))}
-          </ul>
+                </li>
+              ))}
+            </ul>
+          ) : null}
           <CartLineQuantity line={line} />
         </div>
       </div>
@@ -110,29 +117,38 @@ function CartLineQuantity({line}: {line: CartLine}) {
 
   return (
     <div className="mt-[var(--df-space-2)] flex items-center gap-[var(--df-space-2)]">
-      <small>Quantity: {quantity} &nbsp;&nbsp;</small>
+      <span className="sr-only">Quantity: {quantity}</span>
       <CartLineUpdateButton lines={[{id: lineId, quantity: prevQuantity}]}>
         <button
           aria-label="Decrease quantity"
           disabled={quantity <= 1 || !!isOptimistic}
           name="decrease-quantity"
           value={prevQuantity}
+          className="touch-target inline-flex items-center justify-center rounded-[var(--df-radius-sm)] border border-[color:var(--df-color-border-control)] text-[length:var(--df-size-base)] disabled:cursor-not-allowed disabled:border-[color:var(--df-color-border)] disabled:text-[color:var(--df-color-ink-muted)]"
         >
-          <span>&#8722; </span>
+          &#8722;
         </button>
       </CartLineUpdateButton>
-      &nbsp;
+
+      <span
+        aria-hidden
+        className="min-w-[2ch] text-center text-[length:var(--df-size-sm)]"
+      >
+        {quantity}
+      </span>
+
       <CartLineUpdateButton lines={[{id: lineId, quantity: nextQuantity}]}>
         <button
           aria-label="Increase quantity"
           name="increase-quantity"
           value={nextQuantity}
           disabled={!!isOptimistic}
+          className="touch-target inline-flex items-center justify-center rounded-[var(--df-radius-sm)] border border-[color:var(--df-color-border-control)] text-[length:var(--df-size-base)] disabled:cursor-not-allowed disabled:border-[color:var(--df-color-border)] disabled:text-[color:var(--df-color-ink-muted)]"
         >
-          <span>&#43;</span>
+          &#43;
         </button>
       </CartLineUpdateButton>
-      &nbsp;
+
       <CartLineRemoveButton lineIds={[lineId]} disabled={!!isOptimistic} />
     </div>
   );
@@ -157,7 +173,11 @@ function CartLineRemoveButton({
       action={CartForm.ACTIONS.LinesRemove}
       inputs={{lineIds}}
     >
-      <button disabled={disabled} type="submit">
+      <button
+        disabled={disabled}
+        type="submit"
+        className="touch-target ml-auto inline-flex items-center px-[var(--df-space-2)] text-[length:var(--df-size-sm)] text-[color:var(--df-color-ink-muted)] underline underline-offset-4 disabled:no-underline"
+      >
         Remove
       </button>
     </CartForm>

@@ -4,6 +4,15 @@ import {getPaginationVariables, Image} from '@shopify/hydrogen';
 import type {CollectionFragment} from 'storefrontapi.generated';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 
+import {buildMeta} from '~/lib/seo';
+
+export const meta: Route.MetaFunction = ({location}) =>
+  buildMeta({
+    title: 'Collections',
+    description: 'Browse every collection in the store.',
+    pathname: location.pathname,
+  });
+
 export async function loader(args: Route.LoaderArgs) {
   // Start fetching non-critical data without blocking time to first byte
   const deferredData = loadDeferredData(args);
@@ -46,11 +55,14 @@ export default function Collections() {
   const {collections} = useLoaderData<typeof loader>();
 
   return (
-    <div className="collections">
-      <h1>Collections</h1>
+    <div className="container-page section-rhythm">
+      <h1 className="text-[length:var(--df-size-3xl)] md:text-[length:var(--df-size-4xl)]">
+        Collections
+      </h1>
       <PaginatedResourceSection<CollectionFragment>
         connection={collections}
-        resourcesClassName="collections-grid"
+        ariaLabel="Collections"
+        resourcesClassName="mt-[var(--df-space-8)] grid grid-cols-2 gap-[var(--df-space-4)] md:grid-cols-3 lg:grid-cols-4 lg:gap-[var(--df-space-6)]"
       >
         {({node: collection, index}) => (
           <CollectionItem
@@ -73,21 +85,33 @@ function CollectionItem({
 }) {
   return (
     <Link
-      className="collection-item"
+      className="group block"
       key={collection.id}
       to={`/collections/${collection.handle}`}
       prefetch="intent"
     >
-      {collection?.image && (
-        <Image
-          alt={collection.image.altText || collection.title}
-          aspectRatio="1/1"
-          data={collection.image}
-          loading={index < 3 ? 'eager' : undefined}
-          sizes="(min-width: 45em) 400px, 100vw"
-        />
-      )}
-      <h5>{collection.title}</h5>
+      <div className="aspect-square w-full overflow-hidden bg-[color:var(--df-color-raised)]">
+        {collection?.image ? (
+          <Image
+            alt={collection.image.altText || collection.title}
+            aspectRatio="1/1"
+            data={collection.image}
+            loading={index < 4 ? 'eager' : 'lazy'}
+            sizes="(min-width: 1200px) 25vw, (min-width: 900px) 33vw, 50vw"
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          <img
+            src="/placeholders/collection.svg"
+            alt=""
+            loading="lazy"
+            className="h-full w-full object-cover"
+          />
+        )}
+      </div>
+      <h2 className="mt-[var(--df-space-3)] font-[family-name:var(--df-font-body)] text-[length:var(--df-size-sm)] text-[color:var(--df-color-ink)]">
+        {collection.title}
+      </h2>
     </Link>
   );
 }

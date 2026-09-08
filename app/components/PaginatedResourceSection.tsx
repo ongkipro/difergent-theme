@@ -9,7 +9,7 @@ import {Pagination} from '@shopify/hydrogen';
  * same 44px floor as every other control.
  */
 const paginationLinkClass =
-  'touch-target mx-auto my-[var(--df-space-6)] inline-flex w-fit items-center justify-center rounded-[var(--df-radius-md)] border border-[color:var(--df-color-border-control)] px-[var(--df-space-6)] py-[var(--df-space-3)] text-[length:var(--df-size-sm)]';
+  'touch-target inline-flex items-center justify-center rounded-[var(--df-radius-md)] border border-[color:var(--df-color-border-control)] px-[var(--df-space-6)] py-[var(--df-space-3)] text-[length:var(--df-size-sm)] hover:bg-[color:var(--df-color-raised)]';
 
 export function PaginatedResourceSection<NodesType>({
   connection,
@@ -31,9 +31,11 @@ export function PaginatedResourceSection<NodesType>({
 
         return (
           <div>
-            <PreviousLink className={paginationLinkClass}>
-              {isLoading ? 'Loading…' : 'Load previous'}
-            </PreviousLink>
+            <div className="flex justify-center py-[var(--df-space-6)] empty:hidden">
+              <PreviousLink className={paginationLinkClass}>
+                {isLoading ? 'Loading…' : 'Load previous'}
+              </PreviousLink>
+            </div>
             {resourcesClassName ? (
               <div
                 aria-label={ariaLabel}
@@ -45,9 +47,11 @@ export function PaginatedResourceSection<NodesType>({
             ) : (
               resourcesMarkup
             )}
-            <NextLink className={paginationLinkClass}>
-              {isLoading ? 'Loading…' : 'Load more'}
-            </NextLink>
+            <div className="flex justify-center py-[var(--df-space-8)] empty:hidden">
+              <NextLink className={paginationLinkClass}>
+                {isLoading ? 'Loading…' : 'Load more'}
+              </NextLink>
+            </div>
           </div>
         );
       }}

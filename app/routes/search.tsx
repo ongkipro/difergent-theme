@@ -48,30 +48,50 @@ export default function SearchPage() {
   if (type === 'predictive') return null;
 
   return (
-    <div className="search">
-      <h1>Search</h1>
-      <SearchForm>
-        {({inputRef}) => (
-          <>
-            <input
-              defaultValue={term}
-              name="q"
-              placeholder="Search…"
-              ref={inputRef}
-              type="search"
-            />
-            &nbsp;
-            <button type="submit">Search</button>
-          </>
-        )}
-      </SearchForm>
-      {error && <p style={{color: 'red'}}>{error}</p>}
+    <div className="container-page section-rhythm">
+      <h1 className="text-[length:var(--df-size-3xl)] md:text-[length:var(--df-size-4xl)]">
+        Search
+      </h1>
+      <div className="mt-[var(--df-space-6)] max-w-[560px]">
+        <SearchForm>
+          {({inputRef}) => (
+            <div className="flex gap-[var(--df-space-2)]">
+              <label htmlFor="search-term" className="sr-only">
+                Search products
+              </label>
+              <input
+                id="search-term"
+                defaultValue={term}
+                name="q"
+                placeholder="Search products"
+                ref={inputRef}
+                type="search"
+                className="touch-target min-w-0 flex-1 rounded-[var(--df-radius-sm)] px-[var(--df-space-3)]"
+              />
+              <button
+                type="submit"
+                className="touch-target inline-flex shrink-0 items-center justify-center rounded-[var(--df-radius-md)] bg-[color:var(--df-color-accent)] px-[var(--df-space-6)] text-[color:var(--df-color-on-accent)]"
+              >
+                Search
+              </button>
+            </div>
+          )}
+        </SearchForm>
+      </div>
+      {error ? (
+        <p
+          role="alert"
+          className="mt-[var(--df-space-4)] text-[color:var(--df-color-danger)]"
+        >
+          {error}
+        </p>
+      ) : null}
       {!term || !result?.total ? (
         <SearchResults.Empty />
       ) : (
         <SearchResults result={result} term={term}>
           {({articles, pages, products, term}) => (
-            <div>
+            <div className="mt-[var(--df-space-8)]">
               <SearchResults.Products products={products} term={term} />
               <SearchResults.Pages pages={pages} term={term} />
               <SearchResults.Articles articles={articles} term={term} />

@@ -39,8 +39,8 @@ function SearchResultsArticles({
   }
 
   return (
-    <div className="search-result">
-      <h2>Articles</h2>
+    <section className="mb-[var(--df-space-12)]">
+      <h2 className="mb-[var(--df-space-4)] text-[length:var(--df-size-2xl)]">Articles</h2>
       <div>
         {articles?.nodes?.map((article) => {
           const articleUrl = urlWithTrackingParams({
@@ -50,16 +50,15 @@ function SearchResultsArticles({
           });
 
           return (
-            <div className="search-results-item" key={article.id}>
-              <Link prefetch="intent" to={articleUrl}>
+            <div className="border-b border-[color:var(--df-color-hairline)] last:border-0" key={article.id}>
+              <Link prefetch="intent" to={articleUrl} className="touch-target flex items-center py-[var(--df-space-2)] text-[length:var(--df-size-sm)]">
                 {article.title}
               </Link>
             </div>
           );
         })}
       </div>
-      <br />
-    </div>
+    </section>
   );
 }
 
@@ -69,8 +68,8 @@ function SearchResultsPages({term, pages}: PartialSearchResult<'pages'>) {
   }
 
   return (
-    <div className="search-result">
-      <h2>Pages</h2>
+    <section className="mb-[var(--df-space-12)]">
+      <h2 className="mb-[var(--df-space-4)] text-[length:var(--df-size-2xl)]">Pages</h2>
       <div>
         {pages?.nodes?.map((page) => {
           const pageUrl = urlWithTrackingParams({
@@ -80,16 +79,15 @@ function SearchResultsPages({term, pages}: PartialSearchResult<'pages'>) {
           });
 
           return (
-            <div className="search-results-item" key={page.id}>
-              <Link prefetch="intent" to={pageUrl}>
+            <div className="border-b border-[color:var(--df-color-hairline)] last:border-0" key={page.id}>
+              <Link prefetch="intent" to={pageUrl} className="touch-target flex items-center py-[var(--df-space-2)] text-[length:var(--df-size-sm)]">
                 {page.title}
               </Link>
             </div>
           );
         })}
       </div>
-      <br />
-    </div>
+    </section>
   );
 }
 
@@ -102,8 +100,8 @@ function SearchResultsProducts({
   }
 
   return (
-    <div className="search-result">
-      <h2>Products</h2>
+    <section className="mb-[var(--df-space-12)]">
+      <h2 className="mb-[var(--df-space-6)] text-[length:var(--df-size-2xl)]">Products</h2>
       <Pagination connection={products}>
         {({nodes, isLoading, NextLink, PreviousLink}) => {
           const ItemsMarkup = nodes.map((product) => {
@@ -117,34 +115,51 @@ function SearchResultsProducts({
             const image = product?.selectedOrFirstAvailableVariant?.image;
 
             return (
-              <div className="search-results-item" key={product.id}>
-                <Link prefetch="intent" to={productUrl}>
-                  {image && (
-                    <Image data={image} alt={product.title} width={50} />
+              <Link
+                prefetch="intent"
+                to={productUrl}
+                key={product.id}
+                className="flex h-full flex-col border-b border-[color:var(--df-color-hairline)] pb-[var(--df-space-4)]"
+              >
+                <div className="aspect-square w-full overflow-hidden bg-[color:var(--df-color-raised)]">
+                  {image ? (
+                    <Image
+                      data={image}
+                      alt={product.title}
+                      sizes="(min-width: 900px) 25vw, 50vw"
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <img
+                      src="/placeholders/product.svg"
+                      alt=""
+                      className="h-full w-full object-cover"
+                    />
                   )}
-                  <div>
-                    <p>{product.title}</p>
-                    <small>{price && <Money data={price} as="span" />}</small>
-                  </div>
-                </Link>
-              </div>
+                </div>
+                <p className="mt-[var(--df-space-3)] text-[length:var(--df-size-sm)]">
+                  {product.title}
+                </p>
+                <p className="mt-auto pt-[var(--df-space-2)] text-[color:var(--df-color-ink-strong)]">
+                  {price && <Money data={price} as="span" />}
+                </p>
+              </Link>
             );
           });
 
           return (
             <div>
-              <div>
-                <PreviousLink>
-                  {isLoading ? 'Loading...' : <span>↑ Load previous</span>}
+              <div className="flex justify-center py-[var(--df-space-6)] empty:hidden">
+                <PreviousLink className="touch-target inline-flex items-center justify-center rounded-[var(--df-radius-md)] border border-[color:var(--df-color-border-control)] px-[var(--df-space-6)] py-[var(--df-space-3)] text-[length:var(--df-size-sm)]">
+                  {isLoading ? 'Loading…' : 'Load previous'}
                 </PreviousLink>
               </div>
-              <div>
+              <div className="grid grid-cols-2 gap-[var(--df-space-4)] md:grid-cols-3 lg:grid-cols-4 lg:gap-[var(--df-space-6)]">
                 {ItemsMarkup}
-                <br />
               </div>
-              <div>
-                <NextLink>
-                  {isLoading ? 'Loading...' : <span>Load more ↓</span>}
+              <div className="flex justify-center py-[var(--df-space-8)] empty:hidden">
+                <NextLink className="touch-target inline-flex items-center justify-center rounded-[var(--df-radius-md)] border border-[color:var(--df-color-border-control)] px-[var(--df-space-6)] py-[var(--df-space-3)] text-[length:var(--df-size-sm)]">
+                  {isLoading ? 'Loading…' : 'Load more'}
                 </NextLink>
               </div>
             </div>
@@ -152,10 +167,14 @@ function SearchResultsProducts({
         }}
       </Pagination>
       <br />
-    </div>
+    </section>
   );
 }
 
 function SearchResultsEmpty() {
-  return <p>No results, try a different search.</p>;
+  return (
+    <p className="mt-[var(--df-space-8)] text-[color:var(--df-color-ink-muted)]">
+      No results. Try a different search term.
+    </p>
+  );
 }

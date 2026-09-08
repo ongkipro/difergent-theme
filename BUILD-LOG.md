@@ -245,3 +245,47 @@ T25's physical-device confirmation. Every in-app browser invariant holds under
 emulation, but a real phone opening the storefront from inside Instagram and
 WhatsApp is the only evidence that settles it, and no emulator substitutes for
 it. That is hardware, not unfinished work.
+
+## 2026-09-08 — Tidying the collection, cart and search surfaces
+
+Removing the skeleton's stylesheets left these four surfaces functional but
+unstyled, and two of them carried real defects underneath the cosmetics.
+
+**The collections directory had no title and no meta description.** It is an
+indexable route, and Lighthouse scored its SEO at 50 with a matching
+accessibility failure for the missing document title. `collections._index.tsx`,
+`policies._index.tsx` and `cart.tsx` all lacked a `meta` export; all three now
+have one, with the cart marked `noindex` since it is a buyer surface rather than
+a page worth indexing.
+
+**Four more controls sat under the 44px floor**, each only visible once real
+data rendered them: the search results' article and page links, the cart line's
+product title, and the gift card apply button. The pagination controls were
+given their own centred row rather than sitting flush against the grid.
+
+Everything else was composition: the collection directory now uses the same
+comparison grid as the collection page, search results reuse that grid instead
+of a 50px thumbnail list, the cart line has an 88px image with the price on a
+shared baseline, quantity controls read as a stepper, and the drawer's summary
+sticks to the bottom with a safe-area inset.
+
+### Verification
+
+| Route | Performance | Accessibility | Best practices | SEO |
+|---|---|---|---|---|
+| Collections directory | 97 | 100 | 100 | 100 |
+| Collection | 96 | 100 | 100 | 100 |
+| Cart | 97 | 100 | 100 | 66, deliberately `noindex` |
+| Search | 96 | 100 | 100 | 69, deliberately `noindex, follow` |
+
+The two low SEO scores are the crawl directive working as designed: Lighthouse
+penalises any page it cannot index, and neither of those should be indexed.
+
+- Responsive: six routes across eight widths, no overflow, zoom never locked,
+  every target at least 44px.
+- Cart page with a real line at 390px: 6 of 6, including the checkout action
+  spanning the decision region at 358px wide.
+- Commerce 8 of 8 and in-app browser 7 of 7, unchanged.
+
+`scripts/check-cart-page.mjs` was added so the populated cart state stays
+checkable rather than being a one-off observation.

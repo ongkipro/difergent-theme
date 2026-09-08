@@ -10,8 +10,6 @@ type CartSummaryProps = {
 };
 
 export function CartSummary({cart, layout}: CartSummaryProps) {
-  const className =
-    layout === 'page' ? 'cart-summary-page' : 'cart-summary-aside';
   const summaryId = useId();
   const discountsHeadingId = useId();
   const discountCodeInputId = useId();
@@ -19,15 +17,24 @@ export function CartSummary({cart, layout}: CartSummaryProps) {
   const giftCardInputId = useId();
 
   return (
-    <div aria-labelledby={summaryId} className={className}>
-      <h4 id={summaryId}>Totals</h4>
+    <div
+      aria-labelledby={summaryId}
+      className={`mt-[var(--df-space-6)] ${
+        layout === 'aside'
+          ? 'sticky bottom-0 border-t border-[color:var(--df-color-hairline)] bg-[color:var(--df-color-surface)] pt-[var(--df-space-4)] pb-[max(0.75rem,env(safe-area-inset-bottom))]'
+          : ''
+      }`}
+    >
+      <h2 id={summaryId} className="sr-only">
+        Totals
+      </h2>
       <dl role="group" className="flex items-baseline justify-between border-t border-[color:var(--df-color-hairline)] pt-[var(--df-space-4)] text-[length:var(--df-size-lg)]">
-        <dt>Subtotal</dt>
-        <dd>
+        <dt className="text-[color:var(--df-color-ink-muted)]">Subtotal</dt>
+        <dd className="m-0 text-[color:var(--df-color-ink-strong)]">
           {cart?.cost?.subtotalAmount?.amount ? (
-            <Money data={cart?.cost?.subtotalAmount} />
+            <Money data={cart?.cost?.subtotalAmount} as="span" />
           ) : (
-            '-'
+            '—'
           )}
         </dd>
       </dl>
@@ -50,11 +57,17 @@ function CartCheckoutActions({checkoutUrl}: {checkoutUrl?: string}) {
   if (!checkoutUrl) return null;
 
   return (
-    <div>
-      <a href={checkoutUrl} target="_self">
-        <p>Continue to Checkout &rarr;</p>
+    <div className="mt-[var(--df-space-4)]">
+      <a
+        href={checkoutUrl}
+        target="_self"
+        className="touch-target flex w-full items-center justify-center rounded-[var(--df-radius-md)] bg-[color:var(--df-color-accent)] px-[var(--df-space-6)] py-[var(--df-space-3)] text-[color:var(--df-color-on-accent)]"
+      >
+        Continue to checkout
       </a>
-      <br />
+      <p className="mt-[var(--df-space-2)] text-center text-[length:var(--df-size-xs)] text-[color:var(--df-color-ink-muted)]">
+        Taxes and shipping are calculated at checkout on Shopify.
+      </p>
     </div>
   );
 }
@@ -78,16 +91,26 @@ function CartDiscounts({
       {/* Have existing discount, display it with a remove option */}
       <dl hidden={!codes.length}>
         <div>
-          <dt id={discountsHeadingId}>Discounts</dt>
+          <dt
+            id={discountsHeadingId}
+            className="text-[length:var(--df-size-sm)] text-[color:var(--df-color-ink-muted)]"
+          >
+            Discounts
+          </dt>
           <UpdateDiscountForm>
             <div
               className="text-[length:var(--df-size-sm)] text-[color:var(--df-color-success)]"
               role="group"
               aria-labelledby={discountsHeadingId}
             >
-              <code>{codes?.join(', ')}</code>
-              &nbsp;
-              <button type="submit" aria-label="Remove discount">
+              <code className="font-[family-name:var(--df-font-mono)]">
+                {codes?.join(', ')}
+              </code>
+              <button
+                type="submit"
+                aria-label="Remove discount"
+                className="touch-target ml-[var(--df-space-2)] inline-flex items-center text-[length:var(--df-size-sm)] underline underline-offset-4"
+              >
                 Remove
               </button>
             </div>
@@ -97,7 +120,7 @@ function CartDiscounts({
 
       {/* Show an input to apply a discount */}
       <UpdateDiscountForm discountCodes={codes}>
-        <div>
+        <div className="mt-[var(--df-space-4)] flex gap-[var(--df-space-2)]">
           <label htmlFor={discountCodeInputId} className="sr-only">
             Discount code
           </label>
@@ -106,9 +129,13 @@ function CartDiscounts({
             type="text"
             name="discountCode"
             placeholder="Discount code"
+            className="touch-target min-w-0 flex-1 rounded-[var(--df-radius-sm)] px-[var(--df-space-3)] text-[length:var(--df-size-sm)]"
           />
-          &nbsp;
-          <button type="submit" aria-label="Apply discount code">
+          <button
+            type="submit"
+            aria-label="Apply discount code"
+            className="touch-target inline-flex shrink-0 items-center justify-center rounded-[var(--df-radius-md)] border border-[color:var(--df-color-border-control)] px-[var(--df-space-4)] text-[length:var(--df-size-sm)]"
+          >
             Apply
           </button>
         </div>
@@ -211,9 +238,10 @@ function CartGiftCard({
                   }
                 }}
               >
-                <code>***{giftCard.lastCharacters}</code>
-                &nbsp;
-                <Money data={giftCard.amountUsed} />
+                <code className="font-[family-name:var(--df-font-mono)]">
+                  ***{giftCard.lastCharacters}
+                </code>{' '}
+                <Money data={giftCard.amountUsed} as="span" />
               </RemoveGiftCardForm>
             </dd>
           ))}
@@ -221,7 +249,7 @@ function CartGiftCard({
       )}
 
       <AddGiftCardForm fetcherKey="gift-card-add">
-        <div>
+        <div className="mt-[var(--df-space-4)] flex gap-[var(--df-space-2)]">
           <label htmlFor={giftCardInputId} className="sr-only">
             Gift card code
           </label>
@@ -231,12 +259,13 @@ function CartGiftCard({
             name="giftCardCode"
             placeholder="Gift card code"
             ref={giftCardCodeInput}
+            className="touch-target min-w-0 flex-1 rounded-[var(--df-radius-sm)] px-[var(--df-space-3)] text-[length:var(--df-size-sm)]"
           />
-          &nbsp;
           <button
             type="submit"
             disabled={giftCardAddFetcher.state !== 'idle'}
             aria-label="Apply gift card code"
+            className="touch-target inline-flex shrink-0 items-center justify-center rounded-[var(--df-radius-md)] border border-[color:var(--df-color-border-control)] px-[var(--df-space-4)] text-[length:var(--df-size-sm)] disabled:text-[color:var(--df-color-ink-muted)]"
           >
             Apply
           </button>

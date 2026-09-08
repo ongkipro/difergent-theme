@@ -19,6 +19,7 @@ node scripts/check-responsive.mjs     http://localhost:3150 / /collections/men /
 node scripts/check-commerce.mjs       http://localhost:3150
 node scripts/check-inapp-browser.mjs  http://localhost:3150
 node scripts/check-consent.mjs        http://localhost:3150
+node scripts/check-cart-page.mjs      http://localhost:3150
 ```
 
 Each exits non-zero on failure.
@@ -40,6 +41,11 @@ Facebook and WhatsApp browsers: the cart lives on a first-party cookie and
 survives browser storage being wiped; the layout survives the host chrome
 resizing; every bottom-fixed control region reserves safe-area space; checkout
 stays in the same browsing context.
+
+**check-cart-page** — adds a line, then asserts the cart page at 390px: no
+horizontal overflow, lines and subtotal and checkout all present, quantity and
+remove controls present, the checkout action spanning the decision region, and
+every control at the 44px floor.
 
 **check-consent** — with a tag configured, nothing loads while the visitor has
 not decided, and it loads once consent is granted. Requires a probe tag in

@@ -3,10 +3,15 @@ import type {Route} from './+types/cart';
 import type {CartQueryDataReturn} from '@shopify/hydrogen';
 import {CartForm} from '@shopify/hydrogen';
 import {CartMain} from '~/components/CartMain';
+import {NOINDEX, buildMeta} from '~/lib/seo';
 
-export const meta: Route.MetaFunction = () => {
-  return [{title: `Hydrogen | Cart`}];
-};
+export const meta: Route.MetaFunction = ({location}) =>
+  buildMeta({
+    title: 'Cart',
+    description: 'Review the items in your cart before checkout.',
+    pathname: location.pathname,
+    robots: NOINDEX,
+  });
 
 export const headers: HeadersFunction = ({actionHeaders}) => actionHeaders;
 
@@ -105,9 +110,13 @@ export default function Cart() {
   const cart = useLoaderData<typeof loader>();
 
   return (
-    <div className="cart">
-      <h1>Cart</h1>
-      <CartMain layout="page" cart={cart} />
+    <div className="container-page section-rhythm">
+      <h1 className="text-[length:var(--df-size-3xl)] md:text-[length:var(--df-size-4xl)]">
+        Cart
+      </h1>
+      <div className="mt-[var(--df-space-6)]">
+        <CartMain layout="page" cart={cart} />
+      </div>
     </div>
   );
 }
