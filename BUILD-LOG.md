@@ -372,3 +372,46 @@ narrow.
   the 44px floor.
 - All widths from 320 to 1440: no horizontal overflow, zoom never locked.
 - The cart's SEO score of 66 is its `noindex` directive working as intended.
+
+## 2026-09-08 — Header recomposed for mobile
+
+The wordmark stays a text logo. The layout around it was the problem.
+
+**The wordmark was not centred, and at 320px the icons sat on top of it.** The
+header was a flex row, so the wordmark landed wherever the controls left room.
+Switching to a grid did not fix it: `1fr` columns keep their content as a
+minimum, so the two-control right cluster made that column wider than the
+one-control left cluster and pushed the wordmark off centre; `minmax(0, 1fr)`
+centred it but let the icons overflow their columns onto the text. The fix is to
+give both side clusters the same fixed basis, so centring holds by construction
+and the clusters never encroach.
+
+**A long shop name broke the header height.** It now truncates on one line, and
+its size is fluid rather than stepped so it fits at 320px and still reads at
+1440px.
+
+Two smaller corrections: the wordmark link had lost the 44px floor when its
+padding was removed, and the cart badge could clip against the icon. The badge
+now carries a ring in the canvas colour, caps at `99+`, and is hidden from
+assistive technology because the control's accessible name already states the
+count.
+
+### Two test-premise errors worth recording
+
+The first check counted distinct `top` positions among header controls to detect
+wrapping. Controls have different heights, so their top edges differ
+legitimately; it reported every width as wrapped. Header height is the real
+signal.
+
+The second read `r.clipped` when the measurement returned `markClipped`, so the
+comparison was against `undefined` and failed every width from 390px up while
+passing the ones where the check was hardcoded true. A check that fails for the
+wrong reason is worse than no check.
+
+### Verification
+
+`scripts/check-header.mjs`, 7 widths from 320 to 1440: the wordmark sits within
+3px of the true centre line on mobile and left-aligns from `md`, never wraps,
+keeps at least 8px of air from the nearest control, and no control falls under
+44px. Home on a production build: performance 97, accessibility 100, best
+practices 100, SEO 100, LCP 2.0s, CLS 0.

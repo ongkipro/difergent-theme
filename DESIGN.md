@@ -233,6 +233,31 @@ clear of the action, never on top of it. Nothing auto-rotates, which follows
 from the motion dial and from the plain fact that a moving hero takes the
 decision away from the reader.
 
+## Header
+
+The wordmark is the logo. A text wordmark scales, translates, stays legible at
+any size, and costs a store nothing to supply, which an image logo does not.
+
+On mobile the header is one 56px row: a menu control on the left, the wordmark
+centred, search and cart on the right. Centring is achieved by giving the two
+side clusters the same fixed basis rather than by letting the grid size them.
+Content-sized columns put the icons over the wordmark at 320px, because the
+right cluster holds two controls and the left holds one.
+
+The wordmark's size is fluid rather than stepped, so a long shop name fits
+between the clusters at 320px and still carries presence at 1440px. When a name
+is too long for the space it truncates rather than wrapping: a second header row
+pushes the whole page down, which is the worse failure. Truncation is expected
+below 390px for a long name and must not happen above it.
+
+From the `md` breakpoint the row becomes a normal sequence: wordmark, primary
+navigation, then utilities, at 64px.
+
+The cart count is a badge on the cart control with a ring in the canvas colour,
+so it separates from the icon beneath it, and it caps at `99+`. The accessible
+name carries the count in words; the badge itself is hidden from assistive
+technology to avoid announcing the number twice.
+
 ## Accessibility Notes
 
 Contrast computed against `--color-canvas` `#FBFAF8`:

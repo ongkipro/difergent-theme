@@ -20,6 +20,7 @@ node scripts/check-commerce.mjs       http://localhost:3150
 node scripts/check-inapp-browser.mjs  http://localhost:3150
 node scripts/check-consent.mjs        http://localhost:3150
 node scripts/check-cart-page.mjs      http://localhost:3150
+node scripts/check-header.mjs         http://localhost:3150
 ```
 
 Each exits non-zero on failure.
@@ -46,6 +47,10 @@ stays in the same browsing context.
 horizontal overflow, lines and subtotal and checkout all present, quantity and
 remove controls present, the checkout action spanning the decision region, and
 every control at the 44px floor.
+
+**check-header** — the header at 320, 360, 390, 430, 768, 1024 and 1440: the
+wordmark sits on the true centre line on mobile and left-aligns from `md`, never
+clips or wraps, the header stays one row, and no control falls under 44px.
 
 **check-consent** — with a tag configured, nothing loads while the visitor has
 not decided, and it loads once consent is granted. Requires a probe tag in

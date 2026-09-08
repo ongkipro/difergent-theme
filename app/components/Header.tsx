@@ -24,50 +24,82 @@ interface HeaderProps {
 export function Header({header, cart}: HeaderProps) {
   const {open} = useAside();
   const shopName = header?.shop?.name || config.brand.name;
+  // Both side clusters share this basis so the wordmark stays centred; it
+  // tracks the number of utility controls actually rendered.
+  const sideBasis = config.features.predictiveSearch
+    ? 'basis-[88px]'
+    : 'basis-[44px]';
 
   return (
     <header className="sticky top-0 z-30 border-b border-[color:var(--df-color-hairline)] bg-[color:var(--df-color-canvas)]">
-      <div className="container-page flex h-16 items-center gap-[var(--df-space-3)]">
-        <button
-          type="button"
-          onClick={() => open('mobile')}
-          className="touch-target -ml-[var(--df-space-2)] inline-flex items-center gap-[var(--df-space-2)] px-[var(--df-space-2)] text-[length:var(--df-size-sm)] md:hidden"
-          aria-label="Open menu"
+      {/*
+        Mobile is a three-column grid with equal outer columns, so the wordmark
+        is optically centred no matter how many utilities sit beside it. A flex
+        row would shift it every time a control appears or disappears.
+
+        From `md` the grid collapses to a normal row: wordmark, then navigation,
+        then utilities.
+      */}
+      {/*
+        The two side clusters are given the same fixed basis, so the wordmark
+        sits on the true centre line by construction rather than by grid
+        arithmetic. Letting the columns size themselves put the icons over the
+        text at 320px, because a zero-minimum column lets its content overflow.
+      */}
+      <div className="container-page flex h-14 items-center gap-[var(--df-space-2)] md:h-16 md:gap-[var(--df-space-3)]">
+        <div
+          className={`flex shrink-0 items-center md:hidden ${sideBasis}`}
         >
-          <MenuIcon />
-          <span>Menu</span>
-        </button>
+          <button
+            type="button"
+            onClick={() => open('mobile')}
+            className="touch-target -ml-[var(--df-space-3)] inline-flex items-center justify-center"
+            aria-label="Open menu"
+          >
+            <MenuIcon />
+          </button>
+        </div>
 
         <Link
           to="/"
           prefetch="intent"
-          className="touch-target flex min-w-0 items-center"
+          aria-label={`${shopName} home`}
+          className="flex min-h-[44px] min-w-0 flex-1 items-center justify-center md:flex-none md:justify-start"
         >
-          {/* A long shop name must not wrap the header onto a second line. */}
-          <span className="truncate font-[family-name:var(--df-font-display)] text-[length:var(--df-size-lg)] leading-none text-[color:var(--df-color-ink-strong)] sm:text-[length:var(--df-size-xl)]">
+          {/*
+            Fluid rather than stepped: a long shop name has to fit between two
+            icon clusters at 320px and still carry presence at 1440px, and a
+            breakpoint would clip somewhere between the two.
+          */}
+          <span className="truncate px-[var(--df-space-2)] font-[family-name:var(--df-font-display)] text-[clamp(0.95rem,4.2vw,1.25rem)] leading-none tracking-tight text-[color:var(--df-color-ink-strong)] md:px-0">
             {shopName}
           </span>
         </Link>
 
-        <nav className="ml-[var(--df-space-6)] hidden gap-[var(--df-space-6)] md:flex" aria-label="Primary">
+        <nav
+          className="ml-[var(--df-space-8)] hidden gap-[var(--df-space-6)] md:flex"
+          aria-label="Primary"
+        >
           {config.navigation.header.map((item) => (
             <NavLink
               key={item.href}
               to={item.href}
               prefetch="intent"
-              className="touch-target inline-flex items-center text-[length:var(--df-size-sm)]"
+              className="touch-target inline-flex items-center text-[length:var(--df-size-sm)] text-[color:var(--df-color-ink)] aria-[current=page]:text-[color:var(--df-color-ink-strong)] aria-[current=page]:underline aria-[current=page]:underline-offset-8"
             >
               {item.label}
             </NavLink>
           ))}
         </nav>
 
-        <div className="ml-auto flex items-center gap-[var(--df-space-1)]">
+        <div
+          className={`flex shrink-0 items-center justify-end md:ml-auto md:basis-auto ${sideBasis}`}
+        >
           {config.features.predictiveSearch ? (
             <button
               type="button"
               onClick={() => open('search')}
-              className="touch-target inline-flex items-center justify-center px-[var(--df-space-2)]"
+              className="touch-target inline-flex items-center justify-center"
               aria-label="Search"
             >
               <SearchIcon />
@@ -125,8 +157,12 @@ function CartBadge({count}: {count: number | null}) {
   return (
     <button
       type="button"
-      className="touch-target relative inline-flex items-center justify-center px-[var(--df-space-2)]"
-      aria-label={count === null ? 'Cart' : `Cart, ${count} items`}
+      className="touch-target relative inline-flex items-center justify-center"
+      aria-label={
+        count === null
+          ? 'Cart'
+          : `Cart, ${count} ${count === 1 ? 'item' : 'items'}`
+      }
       onClick={() => {
         open('cart');
         publish('cart_viewed', {
@@ -139,8 +175,11 @@ function CartBadge({count}: {count: number | null}) {
     >
       <CartIcon />
       {count !== null && count > 0 ? (
-        <span className="absolute right-0 top-1 min-w-[18px] rounded-[var(--df-radius-pill)] bg-[color:var(--df-color-accent)] px-[5px] text-center text-[length:var(--df-size-xs)] leading-[18px] text-[color:var(--df-color-on-accent)]">
-          {count}
+        <span
+          aria-hidden
+          className="absolute right-[6px] top-[6px] flex h-[18px] min-w-[18px] items-center justify-center rounded-[var(--df-radius-pill)] bg-[color:var(--df-color-accent)] px-[4px] text-[11px] font-medium leading-none text-[color:var(--df-color-on-accent)] ring-2 ring-[color:var(--df-color-canvas)]"
+        >
+          {count > 99 ? '99+' : count}
         </span>
       ) : null}
     </button>
