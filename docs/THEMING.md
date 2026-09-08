@@ -58,6 +58,26 @@ Available types, defined in `app/lib/sections/types.ts`:
 Adding a sixth type is a framework change: add the component, register it in
 `app/lib/sections/registry.tsx`, and add the name to `types.ts`.
 
+## 4b. The hero
+
+`config/sections.ts`, the `hero` entry. It takes a `slides` array, so one entry
+is a static hero and several make a manually-advanced carousel with numbered
+pagination. Each slide takes `eyebrow`, `heading`, `body`, `ctaLabel`,
+`ctaHref`, `image` and `imageAlt`. A slide without a heading fails the build.
+
+Two compositions:
+
+- default, `overlay: false` — copy on a surface beside the image. Contrast is
+  fixed by tokens, so it is safe with any photography a store supplies.
+- `overlay: true` — copy over the image, closer to a conventional campaign
+  hero. It applies a flat scrim at `scrim` strength (0-100, default 65).
+
+If you turn the overlay on, check the result against your real photography.
+Automated accessibility tools cannot resolve a background image, so they will
+report a passing score whether the text is readable or not. The default of 65
+was measured at 5.83:1 for white body text over a light image, which is the
+worst case.
+
 ## 5. Features
 
 `config/features.ts`. A disabled flag removes the UI **and** the Storefront API

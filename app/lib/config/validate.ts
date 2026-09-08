@@ -75,7 +75,25 @@ function validateSections() {
     if (!section.props || typeof section.props !== 'object') {
       throw new ConfigError(`sections[${index}].props`, 'an object', section.props);
     }
-    return {type, props: section.props as Record<string, unknown>};
+
+    const props = section.props as Record<string, unknown>;
+
+    // A hero slide without a heading renders an empty card, which is worse than
+    // a build failure, so it is caught here.
+    if (type === 'hero') {
+      const slides = Array.isArray(props.slides) ? props.slides : [props];
+      if (slides.length === 0) {
+        throw new ConfigError(`sections[${index}].props.slides`, 'at least one slide', slides);
+      }
+      slides.forEach((slide, i) => {
+        const where = Array.isArray(props.slides)
+          ? `sections[${index}].props.slides[${i}].heading`
+          : `sections[${index}].props.heading`;
+        required(where, (slide as Record<string, unknown>)?.heading);
+      });
+    }
+
+    return {type, props};
   });
 }
 

@@ -38,8 +38,13 @@ export function Header({header, cart}: HeaderProps) {
           <span>Menu</span>
         </button>
 
-        <Link to="/" prefetch="intent" className="touch-target flex items-center">
-          <span className="font-[family-name:var(--df-font-display)] text-[length:var(--df-size-xl)] text-[color:var(--df-color-ink-strong)]">
+        <Link
+          to="/"
+          prefetch="intent"
+          className="touch-target flex min-w-0 items-center"
+        >
+          {/* A long shop name must not wrap the header onto a second line. */}
+          <span className="truncate font-[family-name:var(--df-font-display)] text-[length:var(--df-size-lg)] leading-none text-[color:var(--df-color-ink-strong)] sm:text-[length:var(--df-size-xl)]">
             {shopName}
           </span>
         </Link>

@@ -289,3 +289,48 @@ penalises any page it cannot index, and neither of those should be indexed.
 
 `scripts/check-cart-page.mjs` was added so the populated cart state stays
 checkable rather than being a one-off observation.
+
+## 2026-09-08 — Hero rebuilt as an inset card
+
+Reference: the Impact theme demo. Its hero is an inset rounded card holding a
+full-bleed image, with an eyebrow, a two-line display heading, a pill action,
+and numbered slide pagination at the bottom right.
+
+The structure transfers. The text-over-photograph part does not, at least not as
+a default: this is a shell many stores clone, and text over their own
+photography is a contrast lottery that nobody audits afterwards. The default
+therefore keeps the copy on a surface beside the image, and the overlay
+composition is opt-in per store.
+
+The overlay's scrim is a flat colour at a configurable strength rather than a
+gradient. A constant buys the same contrast on every image a store supplies; a
+gradient's protection depends on where the text happens to land. The default of
+65 was chosen against the worst case, a light image.
+
+### Two defects the screenshots caught
+
+- the slide pagination was absolutely positioned bottom-right of the card, which
+  on mobile put it **on top of** the call to action. It now sits in flow below
+  the copy and only floats at `lg`.
+- a long shop name wrapped the header onto a second line, breaking the fixed row
+  height. The name now truncates.
+
+### Contrast, measured rather than scored
+
+Lighthouse reported accessibility 100 on the overlay variant, which is not
+evidence: automated checks skip text over images because they cannot resolve the
+background. Sampling the composited pixels behind the hero copy gives the real
+number.
+
+| Measurement | Value |
+|---|---|
+| Background behind hero text, scrim 65 over a light image | rgb(102, 101, 98) |
+| White body text on it | 5.83:1 |
+| AA body threshold 4.5:1 | pass |
+
+### Verification
+
+Home on a production build: performance 98, accessibility 100, best practices
+100, SEO 100, LCP 2.0s, CLS 0. All widths from 320 to 1440 pass with no
+horizontal overflow, zoom unlocked and no target under 44px. A hero slide
+without a heading fails the build, naming `sections[0].props.slides[0].heading`.

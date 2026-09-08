@@ -25,16 +25,29 @@ type Renderer = (props: Record<string, any>, data: SectionData) => ReactNode;
  * here; a name that is not here fails validation before the page ever renders.
  */
 export const SECTION_REGISTRY: Record<SectionType, Renderer> = {
-  hero: (props) => (
-    <Hero
-      heading={String(props.heading ?? '')}
-      body={props.body ? String(props.body) : undefined}
-      ctaLabel={props.ctaLabel ? String(props.ctaLabel) : undefined}
-      ctaHref={props.ctaHref ? String(props.ctaHref) : undefined}
-      image={props.image ? String(props.image) : undefined}
-      imageAlt={props.imageAlt ? String(props.imageAlt) : undefined}
-    />
-  ),
+  hero: (props) => {
+    // One slide or many: configuration may give a single set of fields or a
+    // `slides` array. Both shapes render the same component.
+    const raw = Array.isArray(props.slides) ? props.slides : [props];
+    const slides = raw
+      .filter((slide: any) => slide && slide.heading)
+      .map((slide: any) => ({
+        eyebrow: slide.eyebrow ? String(slide.eyebrow) : undefined,
+        heading: String(slide.heading),
+        body: slide.body ? String(slide.body) : undefined,
+        ctaLabel: slide.ctaLabel ? String(slide.ctaLabel) : undefined,
+        ctaHref: slide.ctaHref ? String(slide.ctaHref) : undefined,
+        image: slide.image ? String(slide.image) : undefined,
+        imageAlt: slide.imageAlt ? String(slide.imageAlt) : undefined,
+      }));
+    return (
+      <Hero
+        slides={slides}
+        overlay={props.overlay === true}
+        scrim={typeof props.scrim === 'number' ? props.scrim : undefined}
+      />
+    );
+  },
   'featuredCollection': (props, data) => (
     <FeaturedCollection
       heading={props.heading ? String(props.heading) : undefined}

@@ -199,6 +199,40 @@ Device emulation in browser devtools does not reproduce any of this. Evidence
 for these constraints comes from a real phone opening the storefront through a
 link inside the host app.
 
+## Hero composition
+
+The hero is an **inset card**, not a full-bleed banner. The margin of canvas
+around it is the composition: it is what makes the image read as a deliberate
+object rather than a page-wide advertisement, and it is what keeps the section
+consistent with the rest of the page rhythm.
+
+Four parts, in order: an eyebrow naming the category, a display heading, an
+optional supporting line, and one pill action. The pill is the single exception
+to the shape system, and it is deliberate: a fully rounded action reads as an
+invitation where the rest of the interface reads as structure.
+
+**Text sits beside the image by default, not on it.** Text over photography is a
+contrast lottery once a store supplies its own art direction, and nobody audits
+it afterwards. The default keeps the copy on a surface, where contrast is fixed
+by tokens and verified once for every store.
+
+The overlay composition, where copy sits over the image, is available per store
+and carries a scrim. The scrim is a flat colour at a configurable strength, not
+a gradient: a constant buys the same contrast on every image a store supplies,
+while a gradient's protection depends on where the text lands. The default
+strength of 65 is chosen against the worst case a store can hand it, a light
+image, and measured white body text at 5.83:1 there.
+
+A store lowering the scrim is taking on the obligation to check the result.
+Automated accessibility checks do not cover text over images: they cannot
+resolve the background, so they score such a page as passing whether it is
+readable or not.
+
+**Slides advance only when the buyer asks.** Pagination is numbered and sits
+clear of the action, never on top of it. Nothing auto-rotates, which follows
+from the motion dial and from the plain fact that a moving hero takes the
+decision away from the reader.
+
 ## Accessibility Notes
 
 Contrast computed against `--color-canvas` `#FBFAF8`:

@@ -1,11 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-label="Placeholder image">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1200" role="img" aria-label="Placeholder hero image">
   <defs>
-    <pattern id="hatch" width="16" height="16" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-      <rect width="16" height="16" fill="#F4F2EE"/>
-      <line x1="0" y1="0" x2="0" y2="16" stroke="#E4E0D9" stroke-width="6"/>
+    <pattern id="h" width="18" height="18" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <rect width="18" height="18" fill="#F4F2EE"/>
+      <line x1="0" y1="0" x2="0" y2="18" stroke="#E4E0D9" stroke-width="7"/>
     </pattern>
   </defs>
-  <rect width="1600" height="900" fill="url(#hatch)"/>
-  <rect x="1" y="1" width="1598" height="898" fill="none" stroke="#8F8A80" stroke-width="2"/>
-  <text x="800" y="470" text-anchor="middle" font-family="ui-monospace, monospace" font-size="34" letter-spacing="6" fill="#6E6960">PLACEHOLDER / hero</text>
+  <rect width="1600" height="1200" fill="url(#h)"/>
+  <circle cx="800" cy="600" r="230" fill="none" stroke="#8F8A80" stroke-width="3"/>
+  <text x="800" y="592" text-anchor="middle" font-family="ui-monospace, monospace" font-size="34" letter-spacing="7" fill="#6E6960">PLACEHOLDER</text>
+  <text x="800" y="640" text-anchor="middle" font-family="ui-monospace, monospace" font-size="22" letter-spacing="3" fill="#8F8A80">hero</text>
 </svg>
