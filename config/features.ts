@@ -10,6 +10,8 @@ export const features = {
   customerAccounts: false,
   blog: false,
   marketSwitcher: true,
+  /** Most stores do not sell gift cards; the field is hidden unless they do. */
+  giftCards: false,
 } as const;
 
 export type Features = typeof features;

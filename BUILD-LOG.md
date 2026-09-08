@@ -334,3 +334,41 @@ Home on a production build: performance 98, accessibility 100, best practices
 100, SEO 100, LCP 2.0s, CLS 0. All widths from 320 to 1440 pass with no
 horizontal overflow, zoom unlocked and no target under 44px. A hero slide
 without a heading fails the build, naming `sections[0].props.slides[0].heading`.
+
+## 2026-09-08 — Cart summary recomposed
+
+Reading the rendered markup surfaced three problems that the component code hid.
+
+**Two stacked hairlines.** The summary container carried a top border and the
+subtotal list carried another, with padding between them, producing a visible
+double rule in the drawer. The border now belongs to the container in both
+layouts.
+
+**The primary action was pushed away from the number it acts on.** A discount
+field and a gift card field were always open, so two input rows sat between the
+subtotal and the checkout button. Most buyers have no code. Both fields now live
+behind a native `details` disclosure, which opens automatically when a code is
+already applied so an applied discount is never hidden. The disclosure carries a
+plus and minus marker rather than only an underline, because an underline alone
+reads as a link rather than a toggle.
+
+**The gift card field showed on every store.** Most do not sell gift cards, so
+it is now behind `features.giftCards`, off by default.
+
+Three smaller corrections: the tax and shipping caveat moved next to the
+subtotal it qualifies rather than sitting under the button; the subtotal now
+states the item count; and on the cart page the checkout action is capped at
+360px, because a button stretched across 720px of content reads as a bar rather
+than an action. In the drawer it stays full width, where the column is already
+narrow.
+
+### Verification
+
+| Surface | Performance | Accessibility | Best practices |
+|---|---|---|---|
+| Cart page, production build | 98 | 100 | 100 |
+
+- Cart page with a real line at 390px: 6 of 6 checks, including every control at
+  the 44px floor.
+- All widths from 320 to 1440: no horizontal overflow, zoom never locked.
+- The cart's SEO score of 66 is its `noindex` directive working as intended.

@@ -3,6 +3,7 @@ import type {CartLayout} from '~/components/CartMain';
 import {CartForm, Money, type OptimisticCart} from '@shopify/hydrogen';
 import {useEffect, useId, useRef, useState} from 'react';
 import {useFetcher} from 'react-router';
+import {features} from '../../config/features';
 
 type CartSummaryProps = {
   cart: OptimisticCart<CartApiQueryFragment | null>;
@@ -16,48 +17,108 @@ export function CartSummary({cart, layout}: CartSummaryProps) {
   const giftCardHeadingId = useId();
   const giftCardInputId = useId();
 
+  const appliedDiscounts =
+    cart?.discountCodes?.filter((code) => code.applicable) ?? [];
+  const appliedGiftCards = cart?.appliedGiftCards ?? [];
+  const hasCodes = appliedDiscounts.length + appliedGiftCards.length > 0;
+  const itemCount = cart?.totalQuantity ?? 0;
+
   return (
     <div
       aria-labelledby={summaryId}
-      className={`mt-[var(--df-space-6)] ${
+      className={
         layout === 'aside'
           ? 'sticky bottom-0 border-t border-[color:var(--df-color-hairline)] bg-[color:var(--df-color-surface)] pt-[var(--df-space-4)] pb-[max(0.75rem,env(safe-area-inset-bottom))]'
-          : ''
-      }`}
+          : 'mt-[var(--df-space-8)] border-t border-[color:var(--df-color-hairline)] pt-[var(--df-space-6)]'
+      }
     >
       <h2 id={summaryId} className="sr-only">
-        Totals
+        Order summary
       </h2>
-      <dl role="group" className="flex items-baseline justify-between border-t border-[color:var(--df-color-hairline)] pt-[var(--df-space-4)] text-[length:var(--df-size-lg)]">
-        <dt className="text-[color:var(--df-color-ink-muted)]">Subtotal</dt>
+
+      <dl className="flex items-baseline justify-between text-[length:var(--df-size-lg)]">
+        <dt className="text-[color:var(--df-color-ink-muted)]">
+          Subtotal
+          {itemCount > 0 ? (
+            <span className="text-[length:var(--df-size-sm)]">
+              {' '}
+              · {itemCount} {itemCount === 1 ? 'item' : 'items'}
+            </span>
+          ) : null}
+        </dt>
         <dd className="m-0 text-[color:var(--df-color-ink-strong)]">
           {cart?.cost?.subtotalAmount?.amount ? (
             <Money data={cart?.cost?.subtotalAmount} as="span" />
           ) : (
-            '—'
+            '\u2014'
           )}
         </dd>
       </dl>
-      <CartDiscounts
-        discountCodes={cart?.discountCodes}
-        discountsHeadingId={discountsHeadingId}
-        discountCodeInputId={discountCodeInputId}
-      />
-      <CartGiftCard
-        giftCardCodes={cart?.appliedGiftCards}
-        giftCardHeadingId={giftCardHeadingId}
-        giftCardInputId={giftCardInputId}
-      />
-      <CartCheckoutActions checkoutUrl={cart?.checkoutUrl} />
+
+      {/* The caveat belongs next to the number it qualifies, not under the button. */}
+      <p className="mt-[var(--df-space-1)] text-[length:var(--df-size-xs)] text-[color:var(--df-color-ink-muted)]">
+        Taxes and shipping are calculated at checkout.
+      </p>
+
+      {/*
+        Two always-open input rows pushed the checkout action away from the
+        subtotal it belongs to. Most buyers have no code, so the fields are
+        disclosed on request — and opened automatically when a code is already
+        applied, so an applied discount is never hidden from the buyer.
+      */}
+      <details open={hasCodes} className="group mt-[var(--df-space-4)]">
+        <summary className="touch-target inline-flex cursor-pointer list-none items-center gap-[var(--df-space-2)] text-[length:var(--df-size-sm)] text-[color:var(--df-color-ink-muted)] [&::-webkit-details-marker]:hidden">
+          {/* A disclosure, not a link: the marker says it toggles rather than navigates. */}
+          <span
+            aria-hidden
+            className="inline-flex h-5 w-5 items-center justify-center rounded-[var(--df-radius-sm)] border border-[color:var(--df-color-border-control)] leading-none"
+          >
+            <span className="group-open:hidden">+</span>
+            <span className="hidden group-open:inline">&minus;</span>
+          </span>
+          <span className="underline underline-offset-4">
+            {hasCodes ? 'Discounts and gift cards' : 'Add a discount or gift card'}
+          </span>
+        </summary>
+        <div className="pb-[var(--df-space-2)]">
+          <CartDiscounts
+            discountCodes={cart?.discountCodes}
+            discountsHeadingId={discountsHeadingId}
+            discountCodeInputId={discountCodeInputId}
+          />
+          {features.giftCards ? (
+            <CartGiftCard
+              giftCardCodes={cart?.appliedGiftCards}
+              giftCardHeadingId={giftCardHeadingId}
+              giftCardInputId={giftCardInputId}
+            />
+          ) : null}
+        </div>
+      </details>
+
+      <CartCheckoutActions checkoutUrl={cart?.checkoutUrl} layout={layout} />
     </div>
   );
 }
 
-function CartCheckoutActions({checkoutUrl}: {checkoutUrl?: string}) {
+function CartCheckoutActions({
+  checkoutUrl,
+  layout,
+}: {
+  checkoutUrl?: string;
+  layout: CartLayout;
+}) {
   if (!checkoutUrl) return null;
 
   return (
-    <div className="mt-[var(--df-space-4)]">
+    <div
+      className={`mt-[var(--df-space-4)] ${
+        // Full width in the drawer, where the column is already narrow. On the
+        // page a button stretched across the content reads as a bar, not an
+        // action, so it is capped.
+        layout === 'page' ? 'sm:max-w-[360px]' : ''
+      }`}
+    >
       <a
         href={checkoutUrl}
         target="_self"
@@ -66,7 +127,7 @@ function CartCheckoutActions({checkoutUrl}: {checkoutUrl?: string}) {
         Continue to checkout
       </a>
       <p className="mt-[var(--df-space-2)] text-center text-[length:var(--df-size-xs)] text-[color:var(--df-color-ink-muted)]">
-        Taxes and shipping are calculated at checkout on Shopify.
+        Checkout is hosted by Shopify.
       </p>
     </div>
   );
