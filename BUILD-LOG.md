@@ -430,3 +430,31 @@ width and the air between the wordmark and the nearest control goes from 8px to
 21px at 320px, and from 13px to 54px at 390px.
 
 `scripts/check-header.mjs`: 7 of 7 widths, no clipping anywhere.
+
+## 2026-09-08 — The wordmark's descender was clipped
+
+The tail of the g in "Difergent" was cut off. `truncate` sets `overflow: hidden`
+on both axes, and the wordmark carried `leading-none`, so the line box was
+exactly the font size and everything below the baseline was clipped. Line height
+is now 1.35.
+
+The check for it was proven rather than assumed: reverting to `leading-none`
+makes `scripts/check-header.mjs` report `descenderClipped=true` and fail at every
+width; restoring the fix passes all seven. A check that cannot fail is not a
+check, and this session has already produced two of those.
+
+Two other `leading-none` usages were reviewed and left alone: the disclosure's
+plus and minus marker and the cart count badge both render characters with no
+descenders inside fixed-height boxes.
+
+Verified: 7 of 7 header widths, home at performance 97, accessibility 100, best
+practices 100, SEO 100, LCP 2.0s, CLS 0.
+
+### Open discrepancy: the display font is declared but never loaded
+
+`DESIGN.md` names Instrument Serif as the display family and Instrument Sans as
+the body family, and `config/tokens.ts` sets both. Neither is actually loaded, so
+every render falls through to the system stack. The storefront looks
+intentional, but it is not the specified typeface. Either the fonts are loaded
+with the cost that implies, or the tokens and the design record should name the
+system stack they actually use. Not resolved here.

@@ -74,7 +74,12 @@ export function Header({header, cart}: HeaderProps) {
             icon clusters at 320px and still carry presence at 1440px, and a
             breakpoint would clip somewhere between the two.
           */}
-          <span className="truncate px-[var(--df-space-2)] font-[family-name:var(--df-font-display)] text-[clamp(0.95rem,4.2vw,1.25rem)] leading-none tracking-tight text-[color:var(--df-color-ink-strong)] md:px-0">
+          {/*
+            `truncate` sets overflow:hidden, so the line box has to be tall
+            enough to contain descenders. With a line height of 1 the tail of a
+            g, y, p or j is clipped off.
+          */}
+          <span className="truncate px-[var(--df-space-2)] font-[family-name:var(--df-font-display)] text-[clamp(0.95rem,4.2vw,1.25rem)] leading-[1.35] tracking-tight text-[color:var(--df-color-ink-strong)] md:px-0">
             {shopName}
           </span>
         </Link>

@@ -37,15 +37,18 @@ for (const w of [320, 360, 390, 430, 768, 1024, 1440]) {
         .map(el=>{const r=el.getBoundingClientRect();
           return r.left >= mb.right ? r.left - mb.right : (mb.left >= r.right ? mb.left - r.right : 0);}))),
       wrapped,
+      // truncate hides overflow in both axes: a line box shorter than the
+      // font's own height silently clips descenders.
+      descenderClipped: mark.scrollHeight > mark.clientHeight,
     });
   })()`));
   const centred = w >= 768 ? true : Math.abs(r.markCentreOffset) <= 3;
     // Truncation below 390px is the designed fallback for a long shop name; a
   // collision is not. From 390px up, the common phone width, it must not clip.
   const clipOk = w < 390 ? true : r.markClipped === false;
-  const ok = r.overflow===0 && r.smallControls===0 && r.wrapped===false && centred && r.minGap >= 8 && clipOk;
+  const ok = r.overflow===0 && r.smallControls===0 && r.wrapped===false && centred && r.minGap >= 8 && clipOk && r.descenderClipped === false;
   results.push(ok);
-  console.log(`${ok?'PASS':'FAIL'}  ${String(w).padStart(4)}px  height=${r.headerHeight}  centreOffset=${r.markCentreOffset}  clipped=${r.markClipped}  overflow=${r.overflow}  small=${r.smallControls}  minGap=${r.minGap}  wrapped=${r.wrapped}`);
+  console.log(`${ok?'PASS':'FAIL'}  ${String(w).padStart(4)}px  height=${r.headerHeight}  centreOffset=${r.markCentreOffset}  clipped=${r.markClipped}  overflow=${r.overflow}  small=${r.smallControls}  minGap=${r.minGap}  wrapped=${r.wrapped}  descenderClipped=${r.descenderClipped}`);
 }
 console.log('\n'+results.filter(Boolean).length+'/'+results.length+' header checks passed');
 process.exit(results.every(Boolean)?0:1);
