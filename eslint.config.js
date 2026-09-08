@@ -244,4 +244,43 @@ export default [
       'react-hooks/rules-of-hooks': 'off',
     },
   },
+  /**
+   * Design token discipline (REQ-4).
+   *
+   * Brand values live in config/tokens.ts and reach the page as CSS custom
+   * properties. A literal colour, font stack, radius, shadow or transition
+   * duration written into a component is the drift this rule exists to stop.
+   * config/ and the token emitter are the only places allowed to hold values.
+   */
+  {
+    files: ['app/**/*.{ts,tsx,js,jsx}'],
+    ignores: ['app/lib/tokens.ts', 'app/lib/config/**'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector:
+            'Literal[value=/^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/]',
+          message:
+            'Hardcoded colour. Use a design token: var(--color-*) or a Tailwind token utility. Values belong in config/tokens.ts.',
+        },
+        {
+          selector:
+            'Literal[value=/(?:rgb|hsl)a?\\(|font-family\\s*:|box-shadow\\s*:|border-radius\\s*:|transition-duration\\s*:/]',
+          message:
+            'Hardcoded style value. Use a design token from config/tokens.ts via var(--*) or a Tailwind token utility.',
+        },
+      ],
+    },
+  },
+  /**
+   * Verification scripts are command line tools: printing the observed result
+   * is their whole purpose.
+   */
+  {
+    files: ['scripts/**/*.mjs'],
+    rules: {
+      'no-console': 'off',
+    },
+  },
 ];

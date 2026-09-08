@@ -1,6 +1,6 @@
-import {Suspense} from 'react';
-import {Await, NavLink} from 'react-router';
+import {Link} from 'react-router';
 import type {FooterQuery, HeaderQuery} from 'storefrontapi.generated';
+import {config} from '~/lib/config';
 
 interface FooterProps {
   footer: Promise<FooterQuery | null>;
@@ -8,122 +8,97 @@ interface FooterProps {
   publicStoreDomain: string;
 }
 
-export function Footer({
-  footer: footerPromise,
-  header,
-  publicStoreDomain,
-}: FooterProps) {
+/**
+ * Footer structure comes from configuration, not from a Shopify menu, so a
+ * derived store changes it without touching a component. Empty contact and
+ * social values are omitted rather than rendered as dead links.
+ */
+export function Footer({header}: FooterProps) {
+  const shopName = header?.shop?.name || config.brand.name;
+  const socials = Object.entries(config.brand.social).filter(([, href]) => href);
+  const {email, phone, whatsapp} = config.brand.contact;
+
   return (
-    <Suspense>
-      <Await resolve={footerPromise}>
-        {(footer) => (
-          <footer className="footer">
-            {footer?.menu && header.shop.primaryDomain?.url && (
-              <FooterMenu
-                menu={footer.menu}
-                primaryDomainUrl={header.shop.primaryDomain.url}
-                publicStoreDomain={publicStoreDomain}
-              />
-            )}
-          </footer>
-        )}
-      </Await>
-    </Suspense>
+    <footer className="mt-[var(--df-space-16)] border-t border-[color:var(--df-color-hairline)] bg-[color:var(--df-color-canvas)]">
+      <div className="container-page grid gap-[var(--df-space-8)] py-[var(--df-space-12)] md:grid-cols-4">
+        <div>
+          <p className="font-[family-name:var(--df-font-display)] text-[length:var(--df-size-xl)] text-[color:var(--df-color-ink-strong)]">
+            {shopName}
+          </p>
+          {config.brand.tagline ? (
+            <p className="mt-[var(--df-space-2)] max-w-[32ch] text-[length:var(--df-size-sm)] text-[color:var(--df-color-ink-muted)]">
+              {config.brand.tagline}
+            </p>
+          ) : null}
+        </div>
+
+        {config.navigation.footer.map((group) => (
+          <nav key={group.title} aria-label={group.title}>
+            <h2 className="font-[family-name:var(--df-font-body)] text-[length:var(--df-size-sm)] uppercase tracking-wide text-[color:var(--df-color-ink-muted)]">
+              {group.title}
+            </h2>
+            <ul className="mt-[var(--df-space-3)] space-y-[var(--df-space-1)]">
+              {group.links.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    to={link.href}
+                    prefetch="intent"
+                    className="touch-target inline-flex items-center text-[length:var(--df-size-sm)]"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        ))}
+
+        {email || phone || whatsapp || socials.length > 0 ? (
+          <div>
+            <h2 className="font-[family-name:var(--df-font-body)] text-[length:var(--df-size-sm)] uppercase tracking-wide text-[color:var(--df-color-ink-muted)]">
+              Contact
+            </h2>
+            <ul className="mt-[var(--df-space-3)] space-y-[var(--df-space-1)] text-[length:var(--df-size-sm)]">
+              {email ? (
+                <li>
+                  <a className="touch-target inline-flex items-center" href={`mailto:${email}`}>
+                    {email}
+                  </a>
+                </li>
+              ) : null}
+              {phone ? (
+                <li>
+                  <a className="touch-target inline-flex items-center" href={`tel:${phone}`}>
+                    {phone}
+                  </a>
+                </li>
+              ) : null}
+              {whatsapp ? (
+                <li>
+                  <a
+                    className="touch-target inline-flex items-center"
+                    href={`https://wa.me/${whatsapp.replace(/[^0-9]/g, '')}`}
+                    rel="noreferrer"
+                  >
+                    WhatsApp
+                  </a>
+                </li>
+              ) : null}
+              {socials.map(([name, href]) => (
+                <li key={name}>
+                  <a className="touch-target inline-flex items-center capitalize" href={href} rel="noreferrer">
+                    {name}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+      </div>
+
+      <div className="container-page border-t border-[color:var(--df-color-hairline)] py-[var(--df-space-4)] text-[length:var(--df-size-xs)] text-[color:var(--df-color-ink-muted)]">
+        &copy; {new Date().getFullYear()} {shopName}
+      </div>
+    </footer>
   );
-}
-
-function FooterMenu({
-  menu,
-  primaryDomainUrl,
-  publicStoreDomain,
-}: {
-  menu: FooterQuery['menu'];
-  primaryDomainUrl: FooterProps['header']['shop']['primaryDomain']['url'];
-  publicStoreDomain: string;
-}) {
-  return (
-    <nav className="footer-menu" role="navigation">
-      {(menu || FALLBACK_FOOTER_MENU).items.map((item) => {
-        if (!item.url) return null;
-        // if the url is internal, we strip the domain
-        const url =
-          item.url.includes('myshopify.com') ||
-          item.url.includes(publicStoreDomain) ||
-          item.url.includes(primaryDomainUrl)
-            ? new URL(item.url).pathname
-            : item.url;
-        const isExternal = !url.startsWith('/');
-        return isExternal ? (
-          <a href={url} key={item.id} rel="noopener noreferrer" target="_blank">
-            {item.title}
-          </a>
-        ) : (
-          <NavLink
-            end
-            key={item.id}
-            prefetch="intent"
-            style={activeLinkStyle}
-            to={url}
-          >
-            {item.title}
-          </NavLink>
-        );
-      })}
-    </nav>
-  );
-}
-
-const FALLBACK_FOOTER_MENU = {
-  id: 'gid://shopify/Menu/199655620664',
-  items: [
-    {
-      id: 'gid://shopify/MenuItem/461633060920',
-      resourceId: 'gid://shopify/ShopPolicy/23358046264',
-      tags: [],
-      title: 'Privacy Policy',
-      type: 'SHOP_POLICY',
-      url: '/policies/privacy-policy',
-      items: [],
-    },
-    {
-      id: 'gid://shopify/MenuItem/461633093688',
-      resourceId: 'gid://shopify/ShopPolicy/23358013496',
-      tags: [],
-      title: 'Refund Policy',
-      type: 'SHOP_POLICY',
-      url: '/policies/refund-policy',
-      items: [],
-    },
-    {
-      id: 'gid://shopify/MenuItem/461633126456',
-      resourceId: 'gid://shopify/ShopPolicy/23358111800',
-      tags: [],
-      title: 'Shipping Policy',
-      type: 'SHOP_POLICY',
-      url: '/policies/shipping-policy',
-      items: [],
-    },
-    {
-      id: 'gid://shopify/MenuItem/461633159224',
-      resourceId: 'gid://shopify/ShopPolicy/23358079032',
-      tags: [],
-      title: 'Terms of Service',
-      type: 'SHOP_POLICY',
-      url: '/policies/terms-of-service',
-      items: [],
-    },
-  ],
-};
-
-function activeLinkStyle({
-  isActive,
-  isPending,
-}: {
-  isActive: boolean;
-  isPending: boolean;
-}) {
-  return {
-    fontWeight: isActive ? 'bold' : undefined,
-    color: isPending ? 'grey' : 'white',
-  };
 }

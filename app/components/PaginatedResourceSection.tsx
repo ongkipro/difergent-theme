@@ -4,6 +4,13 @@ import {Pagination} from '@shopify/hydrogen';
 /**
  * <PaginatedResourceSection> encapsulates the previous and next pagination behaviors throughout your application.
  */
+/**
+ * Pagination controls are buyer-facing taps, not decoration: they carry the
+ * same 44px floor as every other control.
+ */
+const paginationLinkClass =
+  'touch-target mx-auto my-[var(--df-space-6)] inline-flex w-fit items-center justify-center rounded-[var(--df-radius-md)] border border-[color:var(--df-color-border-control)] px-[var(--df-space-6)] py-[var(--df-space-3)] text-[length:var(--df-size-sm)]';
+
 export function PaginatedResourceSection<NodesType>({
   connection,
   children,
@@ -11,7 +18,7 @@ export function PaginatedResourceSection<NodesType>({
   resourcesClassName,
 }: {
   connection: React.ComponentProps<typeof Pagination<NodesType>>['connection'];
-  children: React.FunctionComponent<{node: NodesType; index: number}>;
+  children: (props: {node: NodesType; index: number}) => React.ReactNode;
   ariaLabel?: string;
   resourcesClassName?: string;
 }) {
@@ -24,14 +31,8 @@ export function PaginatedResourceSection<NodesType>({
 
         return (
           <div>
-            <PreviousLink>
-              {isLoading ? (
-                'Loading...'
-              ) : (
-                <span>
-                  <span aria-hidden="true">↑</span> Load previous
-                </span>
-              )}
+            <PreviousLink className={paginationLinkClass}>
+              {isLoading ? 'Loading…' : 'Load previous'}
             </PreviousLink>
             {resourcesClassName ? (
               <div
@@ -44,14 +45,8 @@ export function PaginatedResourceSection<NodesType>({
             ) : (
               resourcesMarkup
             )}
-            <NextLink>
-              {isLoading ? (
-                'Loading...'
-              ) : (
-                <span>
-                  Load more <span aria-hidden="true">↓</span>
-                </span>
-              )}
+            <NextLink className={paginationLinkClass}>
+              {isLoading ? 'Loading…' : 'Load more'}
             </NextLink>
           </div>
         );

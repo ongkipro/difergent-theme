@@ -7,10 +7,12 @@ export function ProductImage({
   image: ProductVariantFragment['image'];
 }) {
   if (!image) {
-    return <div className="product-image" />;
+    return (
+      <div className="aspect-square w-full bg-[color:var(--df-color-raised)]" />
+    );
   }
   return (
-    <div className="product-image">
+    <div className="aspect-square w-full overflow-hidden bg-[color:var(--df-color-raised)]">
       <Image
         alt={image.altText || 'Product Image'}
         aspectRatio="1/1"

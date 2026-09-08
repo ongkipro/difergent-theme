@@ -35,8 +35,8 @@ export function CartLineItem({
   const childrenLabelId = `cart-line-children-${id}`;
 
   return (
-    <li key={id} className="cart-line">
-      <div className="cart-line-inner">
+    <li key={id} className="border-b border-[color:var(--df-color-hairline)] py-[var(--df-space-4)] last:border-0">
+      <div className="flex gap-[var(--df-space-3)]">
         {image && (
           <Image
             alt={title}
@@ -81,7 +81,7 @@ export function CartLineItem({
           <p id={childrenLabelId} className="sr-only">
             Line items with {product.title}
           </p>
-          <ul aria-labelledby={childrenLabelId} className="cart-line-children">
+          <ul aria-labelledby={childrenLabelId} className="mt-[var(--df-space-2)] space-y-[var(--df-space-1)] text-[length:var(--df-size-sm)] text-[color:var(--df-color-ink-muted)]">
             {lineItemChildren.map((childLine) => (
               <CartLineItem
                 childrenMap={childrenMap}
@@ -109,7 +109,7 @@ function CartLineQuantity({line}: {line: CartLine}) {
   const nextQuantity = Number((quantity + 1).toFixed(0));
 
   return (
-    <div className="cart-line-quantity">
+    <div className="mt-[var(--df-space-2)] flex items-center gap-[var(--df-space-2)]">
       <small>Quantity: {quantity} &nbsp;&nbsp;</small>
       <CartLineUpdateButton lines={[{id: lineId, quantity: prevQuantity}]}>
         <button

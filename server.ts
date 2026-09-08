@@ -1,6 +1,7 @@
 import * as serverBuild from 'virtual:react-router/server-build';
 import {createRequestHandler, storefrontRedirect} from '@shopify/hydrogen';
 import {createHydrogenRouterContext} from '~/lib/context';
+import {validateEnv} from '~/lib/config';
 
 /**
  * Export a fetch handler in module format.
@@ -12,6 +13,9 @@ export default {
     executionContext: ExecutionContext,
   ): Promise<Response> {
     try {
+      // Fail loudly on a misconfigured store rather than serving a broken page.
+      validateEnv(env as unknown as Record<string, unknown>);
+
       const hydrogenContext = await createHydrogenRouterContext(
         request,
         env,

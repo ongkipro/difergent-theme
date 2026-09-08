@@ -1,0 +1,107 @@
+@import 'tailwindcss';
+
+/*
+ * Tailwind's theme points at the custom properties emitted from configuration,
+ * so a token change re-themes every utility without touching a component.
+ */
+@theme inline {
+  /*
+   * Only breakpoints live here. Colour, font, radius and shadow values are
+   * emitted at runtime as --df-* custom properties from config/tokens.ts, and
+   * components reference them directly. Mapping them into Tailwind's own
+   * --color-*/--font-* namespace would be circular.
+   */
+  --breakpoint-sm: 600px;
+  --breakpoint-md: 900px;
+  --breakpoint-lg: 1200px;
+  --breakpoint-xl: 1440px;
+}
+
+/*
+ * Every project rule sits inside a layer. An unlayered rule outranks every
+ * Tailwind utility regardless of specificity, and reaching for !important on a
+ * utility is the symptom of getting this wrong.
+ */
+@layer base {
+  html {
+    /* No zoom lock: the page reflows instead of scaling. */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    background: var(--df-color-canvas);
+    color: var(--df-color-ink);
+    font-family: var(--df-font-body);
+    font-size: var(--df-size-base);
+    line-height: 1.5;
+    /* Prevents horizontal drift without breaking position: sticky. */
+    overflow-x: clip;
+  }
+
+  h1, h2, h3 {
+    font-family: var(--df-font-display);
+    font-weight: 400;
+    line-height: 1.15;
+    color: var(--df-color-ink-strong);
+  }
+
+  :where(a, button, input, select, textarea, summary):focus-visible {
+    /* Independent of the configured accent: a store may set a low-contrast brand color. */
+    outline: 2px solid var(--df-color-ink-strong);
+    outline-offset: 2px;
+  }
+
+  :where(input, select, textarea) {
+    border: 1px solid var(--df-color-border-control);
+    border-radius: var(--df-radius-sm);
+    background: var(--df-color-surface);
+    color: var(--df-color-ink);
+  }
+
+  img, svg, video {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+@layer components {
+  .container-page {
+    width: 100%;
+    max-width: var(--df-layout-max-width);
+    margin-inline: auto;
+    padding-inline: var(--df-layout-gutter);
+  }
+
+  @media (min-width: 900px) {
+    .container-page { padding-inline: var(--df-layout-gutter-md); }
+  }
+
+  @media (min-width: 1200px) {
+    .container-page { padding-inline: var(--df-layout-gutter-lg); }
+  }
+
+  .section-rhythm {
+    padding-block: var(--df-layout-rhythm);
+  }
+
+  @media (min-width: 900px) {
+    .section-rhythm { padding-block: var(--df-layout-rhythm-desktop); }
+  }
+
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+@layer utilities {
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}

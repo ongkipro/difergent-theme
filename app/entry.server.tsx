@@ -7,6 +7,28 @@ import {
 } from '@shopify/hydrogen';
 import type {EntryContext} from 'react-router';
 
+
+/**
+ * Routes that must never enter an index. The directive is set here as a
+ * response header and again in the route's document markup: either layer alone
+ * has been observed to be insufficient, so both are enforced.
+ */
+const NEVER_INDEXED = [
+  /^\/cart(\/|$)/,
+  /^\/account(\/|_|$)/,
+  /^\/discount\//,
+  /^\/search(\/|$)/,
+];
+
+function robotsHeaderFor(pathname: string, status: number): string | null {
+  if (status >= 400) return 'noindex, nofollow';
+  if (/^\/search(\/|$)/.test(pathname)) return 'noindex, follow';
+  if (NEVER_INDEXED.some((pattern) => pattern.test(pathname))) {
+    return 'noindex, nofollow';
+  }
+  return null;
+}
+
 export default async function handleRequest(
   request: Request,
   responseStatusCode: number,
@@ -41,6 +63,14 @@ export default async function handleRequest(
 
   if (isbot(request.headers.get('user-agent'))) {
     await body.allReady;
+  }
+
+  const robots = robotsHeaderFor(
+    new URL(request.url).pathname,
+    responseStatusCode,
+  );
+  if (robots) {
+    responseHeaders.set('X-Robots-Tag', robots);
   }
 
   responseHeaders.set('Content-Type', 'text/html');

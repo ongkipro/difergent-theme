@@ -1,5 +1,6 @@
 import {useLoaderData} from 'react-router';
 import type {Route} from './+types/search';
+import {buildMeta, NOINDEX_FOLLOW} from '~/lib/seo';
 import {getPaginationVariables, Analytics} from '@shopify/hydrogen';
 import {SearchForm} from '~/components/SearchForm';
 import {SearchResults} from '~/components/SearchResults';
@@ -13,9 +14,15 @@ import type {
   PredictiveSearchQuery,
 } from 'storefrontapi.generated';
 
-export const meta: Route.MetaFunction = () => {
-  return [{title: `Hydrogen | Search`}];
-};
+export const meta: Route.MetaFunction = ({location}) =>
+  buildMeta({
+    title: 'Search',
+    pathname: location.pathname,
+    search: location.search,
+    // Results are a view of the catalogue, not a page worth indexing, but the
+    // links on it are worth following.
+    robots: NOINDEX_FOLLOW,
+  });
 
 export async function loader({request, context}: Route.LoaderArgs) {
   const url = new URL(request.url);
@@ -388,7 +395,13 @@ async function predictiveSearch({
   const {storefront} = context;
   const url = new URL(request.url);
   const term = String(url.searchParams.get('q') || '').trim();
-  const limit = Number(url.searchParams.get('limit') || 10);
+  // The Storefront API rejects a predictive-search limit outside 1..10 as a
+  // GraphQL validation error rather than clamping it, so clamp at the boundary.
+  const requested = Number(url.searchParams.get('limit') || 10);
+  const limit = Math.min(
+    10,
+    Math.max(1, Number.isFinite(requested) ? Math.trunc(requested) : 10),
+  );
   const type = 'predictive';
 
   if (!term) return {type, term, result: getEmptyPredictiveSearchResult()};

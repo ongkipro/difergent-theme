@@ -21,7 +21,7 @@ export function CartSummary({cart, layout}: CartSummaryProps) {
   return (
     <div aria-labelledby={summaryId} className={className}>
       <h4 id={summaryId}>Totals</h4>
-      <dl role="group" className="cart-subtotal">
+      <dl role="group" className="flex items-baseline justify-between border-t border-[color:var(--df-color-hairline)] pt-[var(--df-space-4)] text-[length:var(--df-size-lg)]">
         <dt>Subtotal</dt>
         <dd>
           {cart?.cost?.subtotalAmount?.amount ? (
@@ -81,7 +81,7 @@ function CartDiscounts({
           <dt id={discountsHeadingId}>Discounts</dt>
           <UpdateDiscountForm>
             <div
-              className="cart-discount"
+              className="text-[length:var(--df-size-sm)] text-[color:var(--df-color-success)]"
               role="group"
               aria-labelledby={discountsHeadingId}
             >
@@ -198,7 +198,7 @@ function CartGiftCard({
         <dl>
           <dt id={giftCardHeadingId}>Applied Gift Card(s)</dt>
           {giftCardCodes.map((giftCard) => (
-            <dd key={giftCard.id} className="cart-discount">
+            <dd key={giftCard.id} className="text-[length:var(--df-size-sm)] text-[color:var(--df-color-success)]">
               <RemoveGiftCardForm
                 giftCardId={giftCard.id}
                 lastCharacters={giftCard.lastCharacters}

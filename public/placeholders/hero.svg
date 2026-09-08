@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-label="Placeholder image">
+  <defs>
+    <pattern id="hatch" width="16" height="16" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <rect width="16" height="16" fill="#F4F2EE"/>
+      <line x1="0" y1="0" x2="0" y2="16" stroke="#E4E0D9" stroke-width="6"/>
+    </pattern>
+  </defs>
+  <rect width="1600" height="900" fill="url(#hatch)"/>
+  <rect x="1" y="1" width="1598" height="898" fill="none" stroke="#8F8A80" stroke-width="2"/>
+  <text x="800" y="470" text-anchor="middle" font-family="ui-monospace, monospace" font-size="34" letter-spacing="6" fill="#6E6960">PLACEHOLDER / hero</text>
+</svg>

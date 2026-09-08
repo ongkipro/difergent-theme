@@ -1,14 +1,22 @@
 import {redirect, useLoaderData} from 'react-router';
 import type {Route} from './+types/collections.$handle';
 import {getPaginationVariables, Analytics} from '@shopify/hydrogen';
+import {config} from '~/lib/config';
+import {gridPageSize} from '~/lib/tokens';
+import {buildMeta} from '~/lib/seo';
+import {ProductCard} from '~/components/ProductCard';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
 import {ProductItem} from '~/components/ProductItem';
 import type {ProductItemFragment} from 'storefrontapi.generated';
 
-export const meta: Route.MetaFunction = ({data}) => {
-  return [{title: `Hydrogen | ${data?.collection.title ?? ''} Collection`}];
-};
+export const meta: Route.MetaFunction = ({data, location}) =>
+  buildMeta({
+    title: data?.collection?.title,
+    description: data?.collection?.description,
+    pathname: location.pathname,
+    search: location.search,
+  });
 
 export async function loader(args: Route.LoaderArgs) {
   // Start fetching non-critical data without blocking time to first byte
@@ -27,8 +35,10 @@ export async function loader(args: Route.LoaderArgs) {
 async function loadCriticalData({context, params, request}: Route.LoaderArgs) {
   const {handle} = params;
   const {storefront} = context;
+  // An exact multiple of the desktop column count, which also divides evenly
+  // by the two-column mobile grid, so no page ends in a single orphan card.
   const paginationVariables = getPaginationVariables(request, {
-    pageBy: 8,
+    pageBy: gridPageSize(config.tokens),
   });
 
   if (!handle) {
@@ -69,18 +79,28 @@ export default function Collection() {
   const {collection} = useLoaderData<typeof loader>();
 
   return (
-    <div className="collection">
-      <h1>{collection.title}</h1>
-      <p className="collection-description">{collection.description}</p>
+    <div className="container-page section-rhythm">
+      <h1 className="text-[length:var(--df-size-3xl)] md:text-[length:var(--df-size-4xl)]">
+        {collection.title}
+      </h1>
+      {collection.description ? (
+        <p className="mt-[var(--df-space-3)] max-w-[68ch] text-[color:var(--df-color-ink-muted)]">
+          {collection.description}
+        </p>
+      ) : null}
+      {/* The grid is a section under the collection title; naming it keeps the
+          heading order unbroken for a screen reader. */}
+      <h2 className="sr-only">Products</h2>
       <PaginatedResourceSection<ProductItemFragment>
         connection={collection.products}
-        resourcesClassName="products-grid"
+        resourcesClassName="mt-[var(--df-space-8)] grid grid-cols-2 gap-[var(--df-space-4)] md:grid-cols-3 lg:grid-cols-4 lg:gap-[var(--df-space-6)]"
+        ariaLabel={`Products in ${collection.title}`}
       >
         {({node: product, index}) => (
-          <ProductItem
+          <ProductCard
             key={product.id}
             product={product}
-            loading={index < 8 ? 'eager' : undefined}
+            loading={index < 4 ? 'eager' : 'lazy'}
           />
         )}
       </PaginatedResourceSection>

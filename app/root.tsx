@@ -1,5 +1,6 @@
 import {Analytics, getShopAnalytics, useNonce} from '@shopify/hydrogen';
 import {
+  Link,
   Outlet,
   useRouteError,
   isRouteErrorResponse,
@@ -13,8 +14,11 @@ import {
 import type {Route} from './+types/root';
 import favicon from '~/assets/favicon.svg';
 import {FOOTER_QUERY, HEADER_QUERY} from '~/lib/fragments';
-import resetStyles from '~/styles/reset.css?url';
-import appStyles from '~/styles/app.css?url';
+import tailwindStyles from '~/styles/tailwind.css?url';
+import {config} from '~/lib/config';
+import {tokensToCss} from '~/lib/tokens';
+import {MarketingTags} from '~/components/MarketingTags';
+import {tracking} from '../config/tracking';
 import {PageLayout} from './components/PageLayout';
 
 export type RootLoader = typeof loader;
@@ -85,7 +89,7 @@ export async function loader(args: Route.LoaderArgs) {
     consent: {
       checkoutDomain: env.PUBLIC_CHECKOUT_DOMAIN,
       storefrontAccessToken: env.PUBLIC_STOREFRONT_API_TOKEN,
-      withPrivacyBanner: false,
+      withPrivacyBanner: tracking.privacyBanner,
       // localize the privacy banner
       country: args.context.storefront.i18n.country,
       language: args.context.storefront.i18n.language,
@@ -148,9 +152,15 @@ export function Layout({children}: {children?: React.ReactNode}) {
     <html lang="en">
       <head>
         <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width,initial-scale=1" />
-        <link rel="stylesheet" href={resetStyles}></link>
-        <link rel="stylesheet" href={appStyles}></link>
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, viewport-fit=cover"
+        />
+        <link rel="stylesheet" href={tailwindStyles}></link>
+        <style
+          nonce={nonce}
+          dangerouslySetInnerHTML={{__html: tokensToCss(config.tokens)}}
+        />
         <Meta />
         <Links />
       </head>
@@ -176,6 +186,7 @@ export default function App() {
       shop={data.shop}
       consent={data.consent}
     >
+      <MarketingTags />
       <PageLayout {...data}>
         <Outlet />
       </PageLayout>
@@ -185,25 +196,49 @@ export default function App() {
 
 export function ErrorBoundary() {
   const error = useRouteError();
-  let errorMessage = 'Unknown error';
-  let errorStatus = 500;
+  const status = isRouteErrorResponse(error) ? error.status : 500;
+  const notFound = status === 404;
 
-  if (isRouteErrorResponse(error)) {
-    errorMessage = error?.data?.message ?? error.data;
-    errorStatus = error.status;
-  } else if (error instanceof Error) {
-    errorMessage = error.message;
+  // The internal message is logged, never rendered: a buyer cannot act on a
+  // stack trace, and it can disclose implementation detail.
+  if (!isRouteErrorResponse(error)) {
+    console.error(error);
   }
 
   return (
-    <div className="route-error">
-      <h1>Oops</h1>
-      <h2>{errorStatus}</h2>
-      {errorMessage && (
-        <fieldset>
-          <pre>{errorMessage}</pre>
-        </fieldset>
-      )}
+    <div className="container-page section-rhythm">
+      {/*
+        React 19 hoists these into the document head. The response header set in
+        entry.server.tsx says the same thing; both layers are required because
+        either one alone has been observed to be insufficient.
+      */}
+      <title>{notFound ? 'Page not found' : 'Something went wrong'}</title>
+      <meta name="robots" content="noindex, nofollow" />
+      <h1 className="text-[length:var(--df-size-3xl)]">
+        {notFound ? 'Page not found' : 'Something went wrong'}
+      </h1>
+      <p className="mt-[var(--df-space-4)] max-w-[52ch] text-[color:var(--df-color-ink-muted)]">
+        {notFound
+          ? 'The page you requested does not exist. It may have been moved, or the link may be out of date.'
+          : 'We could not load this page. Please try again, or continue browsing.'}
+      </p>
+      <nav
+        aria-label="Recovery"
+        className="mt-[var(--df-space-6)] flex flex-wrap gap-[var(--df-space-4)]"
+      >
+        <Link
+          to="/"
+          className="touch-target inline-flex items-center rounded-[var(--df-radius-md)] bg-[color:var(--df-color-accent)] px-[var(--df-space-6)] py-[var(--df-space-3)] text-[color:var(--df-color-on-accent)]"
+        >
+          Go to the homepage
+        </Link>
+        <Link
+          to="/collections"
+          className="touch-target inline-flex items-center rounded-[var(--df-radius-md)] border border-[color:var(--df-color-border-control)] px-[var(--df-space-6)] py-[var(--df-space-3)]"
+        >
+          Browse collections
+        </Link>
+      </nav>
     </div>
   );
 }

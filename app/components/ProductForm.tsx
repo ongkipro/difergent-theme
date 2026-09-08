@@ -18,15 +18,21 @@ export function ProductForm({
   const navigate = useNavigate();
   const {open} = useAside();
   return (
-    <div className="product-form">
+    <div className="mt-[var(--df-space-6)]">
       {productOptions.map((option) => {
-        // If there is only a single value in the option values, don't display the option
+        // A single value is the platform's synthetic default, not a buyer
+        // choice, so it is not shown.
         if (option.optionValues.length === 1) return null;
 
         return (
-          <div className="product-options" key={option.name}>
-            <h5>{option.name}</h5>
-            <div className="product-options-grid">
+          <fieldset
+            className="mb-[var(--df-space-6)] border-0 p-0"
+            key={option.name}
+          >
+            <legend className="mb-[var(--df-space-3)] p-0 text-[length:var(--df-size-sm)] uppercase tracking-wide text-[color:var(--df-color-ink-muted)]">
+              {option.name}
+            </legend>
+            <div className="flex flex-wrap gap-[var(--df-space-2)]">
               {option.optionValues.map((value) => {
                 const {
                   name,
@@ -39,66 +45,61 @@ export function ProductForm({
                   swatch,
                 } = value;
 
+                // State is signalled by border weight, strikethrough and the
+                // accessible label as well as colour, never by colour alone.
+                const base =
+                  'touch-target inline-flex items-center justify-center rounded-[var(--df-radius-sm)] px-[var(--df-space-3)] text-[length:var(--df-size-sm)] border';
+                const state = selected
+                  ? ' border-[color:var(--df-color-ink-strong)] border-2 bg-[color:var(--df-color-raised)]'
+                  : ' border-[color:var(--df-color-border-control)]';
+                const unavailable = available
+                  ? ''
+                  : ' line-through text-[color:var(--df-color-ink-muted)]';
+
                 if (isDifferentProduct) {
-                  // SEO
-                  // When the variant is a combined listing child product
-                  // that leads to a different url, we need to render it
-                  // as an anchor tag
                   return (
                     <Link
-                      className="product-options-item"
+                      className={base + state + unavailable}
                       key={option.name + name}
                       prefetch="intent"
                       preventScrollReset
                       replace
+                      aria-current={selected ? 'true' : undefined}
                       to={`/products/${handle}?${variantUriQuery}`}
-                      style={{
-                        border: selected
-                          ? '1px solid black'
-                          : '1px solid transparent',
-                        opacity: available ? 1 : 0.3,
-                      }}
                     >
                       <ProductOptionSwatch swatch={swatch} name={name} />
+                      {available ? null : (
+                        <span className="sr-only"> (unavailable)</span>
+                      )}
                     </Link>
                   );
-                } else {
-                  // SEO
-                  // When the variant is an update to the search param,
-                  // render it as a button with javascript navigating to
-                  // the variant so that SEO bots do not index these as
-                  // duplicated links
-                  return (
-                    <button
-                      type="button"
-                      className={`product-options-item${
-                        exists && !selected ? ' link' : ''
-                      }`}
-                      key={option.name + name}
-                      style={{
-                        border: selected
-                          ? '1px solid black'
-                          : '1px solid transparent',
-                        opacity: available ? 1 : 0.3,
-                      }}
-                      disabled={!exists}
-                      onClick={() => {
-                        if (!selected) {
-                          void navigate(`?${variantUriQuery}`, {
-                            replace: true,
-                            preventScrollReset: true,
-                          });
-                        }
-                      }}
-                    >
-                      <ProductOptionSwatch swatch={swatch} name={name} />
-                    </button>
-                  );
                 }
+
+                return (
+                  <button
+                    type="button"
+                    className={base + state + unavailable}
+                    key={option.name + name}
+                    aria-pressed={selected}
+                    disabled={!exists}
+                    onClick={() => {
+                      if (!selected) {
+                        void navigate(`?${variantUriQuery}`, {
+                          replace: true,
+                          preventScrollReset: true,
+                        });
+                      }
+                    }}
+                  >
+                    <ProductOptionSwatch swatch={swatch} name={name} />
+                    {available ? null : (
+                      <span className="sr-only"> (unavailable)</span>
+                    )}
+                  </button>
+                );
               })}
             </div>
-            <br />
-          </div>
+          </fieldset>
         );
       })}
       <AddToCartButton
@@ -139,7 +140,7 @@ function ProductOptionSwatch({
   return (
     <div
       aria-label={name}
-      className="product-option-label-swatch"
+      className="inline-block h-5 w-5 rounded-[var(--df-radius-pill)] border border-[color:var(--df-color-border-control)]"
       style={{
         backgroundColor: color || 'transparent',
       }}

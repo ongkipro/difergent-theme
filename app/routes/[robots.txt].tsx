@@ -1,15 +1,22 @@
 import type {Route} from './+types/[robots.txt]';
+import {config} from '~/lib/config';
 
 export function loader({request}: Route.LoaderArgs) {
   const url = new URL(request.url);
-  const body = robotsTxtData({url: url.origin});
+  const isPublicHost = url.origin === config.brand.publicHost;
+
+  // A preview or staging host serving the same catalogue is a duplicate of the
+  // real storefront. Disallow it wholesale rather than letting it be indexed.
+  const body = isPublicHost
+    ? robotsTxtData({url: config.brand.publicHost})
+    : 'User-agent: *\nDisallow: /\n';
 
   return new Response(body, {
     status: 200,
     headers: {
       'Content-Type': 'text/plain',
-
       'Cache-Control': `max-age=${60 * 60 * 24}`,
+      ...(isPublicHost ? {} : {'X-Robots-Tag': 'noindex, nofollow'}),
     },
   });
 }

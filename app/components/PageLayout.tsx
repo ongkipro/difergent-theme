@@ -73,23 +73,29 @@ function SearchAside() {
   const queriesDatalistId = useId();
   return (
     <Aside type="search" heading="SEARCH">
-      <div className="predictive-search">
-        <br />
+      <div>
         <SearchFormPredictive>
           {({fetchResults, goToSearch, inputRef}) => (
-            <>
+            <div className="flex gap-[var(--df-space-2)]">
               <input
                 name="q"
                 onChange={fetchResults}
                 onFocus={fetchResults}
                 placeholder="Search"
+                aria-label="Search products"
                 ref={inputRef}
                 type="search"
                 list={queriesDatalistId}
+                className="touch-target w-full flex-1 px-[var(--df-space-3)]"
               />
-              &nbsp;
-              <button onClick={goToSearch}>Search</button>
-            </>
+              <button
+                type="button"
+                onClick={goToSearch}
+                className="touch-target inline-flex shrink-0 items-center justify-center rounded-[var(--df-radius-md)] bg-[color:var(--df-color-accent)] px-[var(--df-space-4)] text-[color:var(--df-color-on-accent)]"
+              >
+                Search
+              </button>
+            </div>
           )}
         </SearchFormPredictive>
 

@@ -1,0 +1,43 @@
+name: checks
+
+# A derived store inherits whatever upstream ships, so a broken upstream must
+# never reach one. These checks run on every push and pull request.
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    env:
+      # Build-time values only. No secret is read, and none is needed: the
+      # storefront is not queried during a type check, lint or build.
+      SESSION_SECRET: ci-placeholder-session-secret-not-a-real-value
+      PUBLIC_STORE_DOMAIN: mock.shop
+      PUBLIC_STOREFRONT_API_TOKEN: '00000000000000000000000000000000'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Lint, including the design token rule
+        run: npm run lint
+
+      - name: Build
+        run: npm run build

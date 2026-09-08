@@ -55,7 +55,7 @@ export function CartMain({layout, cart: originalCart}: CartMainProps) {
       aria-label={layout === 'page' ? 'Cart page' : 'Cart drawer'}
     >
       <CartEmpty hidden={linesCount} layout={layout} />
-      <div className="cart-details">
+      <div className="flex h-full flex-col">
         <p id="cart-lines" className="sr-only">
           Line items
         </p>
@@ -101,8 +101,13 @@ function CartEmpty({
         started!
       </p>
       <br />
-      <Link to="/collections" onClick={close} prefetch="viewport">
-        Continue shopping →
+      <Link
+        to="/collections"
+        onClick={close}
+        prefetch="viewport"
+        className="touch-target mt-[var(--df-space-4)] inline-flex items-center rounded-[var(--df-radius-md)] bg-[color:var(--df-color-accent)] px-[var(--df-space-6)] py-[var(--df-space-3)] text-[color:var(--df-color-on-accent)]"
+      >
+        Continue shopping
       </Link>
     </div>
   );

@@ -3,9 +3,32 @@ import {defineConfig} from 'vite';
 import {hydrogen} from '@shopify/hydrogen/vite';
 import {oxygen} from '@shopify/mini-oxygen/vite';
 import {reactRouter} from '@react-router/dev/vite';
+import tailwindcss from '@tailwindcss/vite';
+import {validateConfig} from './app/lib/config/validate';
+
+/**
+ * Configuration is validated as part of the build, not only at runtime.
+ * Bundling a module does not execute it, so without this a store could ship a
+ * misspelled section name or a malformed public host and only discover it when
+ * a buyer hit the page.
+ */
+function validateStoreConfig() {
+  return {
+    name: 'difergent:validate-config',
+    buildStart() {
+      validateConfig();
+    },
+  };
+}
 
 export default defineConfig({
-  plugins: [hydrogen(), oxygen(), reactRouter()],
+  plugins: [
+    validateStoreConfig(),
+    hydrogen(),
+    oxygen(),
+    reactRouter(),
+    tailwindcss(),
+  ],
   resolve: {
     alias: {
       // Vite's native tsconfig path resolver does not cover JavaScript
