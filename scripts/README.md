@@ -21,6 +21,7 @@ node scripts/check-inapp-browser.mjs  http://localhost:3150
 node scripts/check-consent.mjs        http://localhost:3150
 node scripts/check-cart-page.mjs      http://localhost:3150
 node scripts/check-header.mjs         http://localhost:3150
+node scripts/check-fonts.mjs          http://localhost:3150
 ```
 
 Each exits non-zero on failure.
@@ -51,6 +52,12 @@ every control at the 44px floor.
 **check-header** — the header at 320, 360, 390, 430, 768, 1024 and 1440: the
 wordmark sits on the true centre line on mobile and left-aligns from `md`, never
 clips or wraps, the header stays one row, and no control falls under 44px.
+
+**check-fonts** — the configured families are downloaded, usable, and actually
+rendering. It measures the wordmark against the same string in the fallback
+stack, because a face can download and still not be applied. It also confirms no
+font request was blocked, which is what happens when a host is missing from the
+Content Security Policy.
 
 **check-consent** — with a tag configured, nothing loads while the visitor has
 not decided, and it loads once consent is granted. Requires a probe tag in

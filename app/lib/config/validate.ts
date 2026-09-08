@@ -63,6 +63,23 @@ function validateTokens() {
   for (const [name, value] of Object.entries(tokens.font)) {
     required(`tokens.font.${name}`, value);
   }
+  // A font host that is not in the policy is silently blocked, so the two are
+  // validated together rather than trusted to stay in step.
+  if (tokens.fontSource.href) {
+    url('tokens.fontSource.href', tokens.fontSource.href);
+    const origin = new URL(tokens.fontSource.href).origin;
+    if (!tokens.fontSource.origins.includes(origin as never)) {
+      throw new ConfigError(
+        'tokens.fontSource.origins',
+        `a list containing ${origin}, the origin of the stylesheet`,
+        tokens.fontSource.origins,
+      );
+    }
+    tokens.fontSource.origins.forEach((value, i) =>
+      url(`tokens.fontSource.origins[${i}]`, value),
+    );
+  }
+
   int('tokens.layout.gridColumns', tokens.layout.gridColumns, 2, 6);
   required('tokens.layout.maxWidth', tokens.layout.maxWidth);
   return tokens;

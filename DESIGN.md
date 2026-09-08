@@ -92,8 +92,23 @@ intentional rather than broken, which matters because the first render of a new
 clone happens before any brand decision exists.
 
 **Typography.** Display `"Instrument Serif"`, body `"Instrument Sans"`, numeric
-and order references `ui-monospace`. Fonts load with `font-display: swap` and a
-system fallback stack sized to limit shift. Base 16px. Scale: 12, 14, 16, 18,
+and order references `ui-monospace`. The families are actually loaded, from the
+source named in `tokens.fontSource`, requesting only the weights in use: one for
+the serif, 400 and 500 for the sans. Both hosts are preconnected, because the
+stylesheet and the font files come from different origins and connecting to only
+the first still pays a full handshake before any glyph arrives.
+
+`display=swap` renders the fallback immediately and swaps when the file lands,
+so a slow font never blanks the page. Measured against the same build with the
+source removed, the fonts cost nothing: performance 97 either way, LCP 2.0-2.1s
+with them against 2.1-2.2s without, cumulative layout shift 0.001 against 0. A
+store that wants no third-party request can set the source to an empty string
+and run on the fallback stacks.
+
+The font hosts must also appear in the Content Security Policy. A host missing
+from it is blocked silently: the page renders on the fallback and nothing
+reports why. Configuration carries both the stylesheet and its origins, and
+validation rejects a source whose origin is not in the list. Base 16px. Scale: 12, 14, 16, 18,
 20, 24, 30, 38, 48, 60. Body 16 at weight 400, headings weight 400 on the serif
 so weight is never the only hierarchy signal, labels 14 at weight 500 with
 slight positive tracking. Line height 1.5 body, 1.15 display.

@@ -31,6 +31,22 @@ export const tokens = {
     body: '"Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif',
     mono: 'ui-monospace, SFMono-Regular, Menlo, monospace',
   },
+  /**
+   * Where the families above come from.
+   *
+   * Only the weights actually used are requested: Instrument Serif has one
+   * weight, and the body needs 400 and 500. `display=swap` renders the fallback
+   * immediately and swaps when the file lands, so a slow font never blanks the
+   * page.
+   *
+   * Set `href` to an empty string to drop the request entirely and run on the
+   * fallback stacks. `origins` feeds the Content Security Policy, so a store
+   * pointing at a different host must list it here or the browser blocks it.
+   */
+  fontSource: {
+    href: 'https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500&family=Instrument+Serif&display=swap',
+    origins: ['https://fonts.googleapis.com', 'https://fonts.gstatic.com'],
+  },
   size: {
     xs: '0.75rem',
     sm: '0.875rem',

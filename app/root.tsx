@@ -65,6 +65,19 @@ export function links() {
       rel: 'preconnect',
       href: 'https://shop.app',
     },
+    ...(config.tokens.fontSource.href
+      ? [
+          // Preconnect to both hosts: the stylesheet comes from one and the
+          // font files from the other, so connecting to only the first still
+          // pays a full handshake before any glyph arrives.
+          ...config.tokens.fontSource.origins.map((href) => ({
+            rel: 'preconnect',
+            href,
+            crossOrigin: 'anonymous' as const,
+          })),
+          {rel: 'stylesheet', href: config.tokens.fontSource.href},
+        ]
+      : []),
     {rel: 'icon', type: 'image/svg+xml', href: favicon},
   ];
 }

@@ -16,7 +16,8 @@
     "check:inapp": "node scripts/check-inapp-browser.mjs",
     "check:consent": "node scripts/check-consent.mjs",
     "check:cart": "node scripts/check-cart-page.mjs",
-    "check:header": "node scripts/check-header.mjs"
+    "check:header": "node scripts/check-header.mjs",
+    "check:fonts": "node scripts/check-fonts.mjs"
   },
   "prettier": "@shopify/prettier-config",
   "dependencies": {

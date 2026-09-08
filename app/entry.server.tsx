@@ -6,6 +6,7 @@ import {
   type HydrogenRouterContextProvider,
 } from '@shopify/hydrogen';
 import type {EntryContext} from 'react-router';
+import {tokens} from '../config/tokens';
 
 
 /**
@@ -36,11 +37,18 @@ export default async function handleRequest(
   reactRouterContext: EntryContext,
   context: HydrogenRouterContextProvider,
 ) {
+  // A font host absent from the policy is blocked silently: the page renders on
+  // the fallback stack and nothing reports why. The origins come from the same
+  // configuration as the stylesheet, and validation keeps the two in step.
+  const fontOrigins = tokens.fontSource.href ? [...tokens.fontSource.origins] : [];
+
   const {nonce, header, NonceProvider} = createContentSecurityPolicy({
     shop: {
       checkoutDomain: context.env.PUBLIC_CHECKOUT_DOMAIN,
       storeDomain: context.env.PUBLIC_STORE_DOMAIN,
     },
+    styleSrc: ["'self'", "'unsafe-inline'", ...fontOrigins],
+    fontSrc: ["'self'", 'data:', ...fontOrigins],
   });
 
   const body = await renderToReadableStream(

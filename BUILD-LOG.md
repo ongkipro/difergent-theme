@@ -458,3 +458,36 @@ every render falls through to the system stack. The storefront looks
 intentional, but it is not the specified typeface. Either the fonts are loaded
 with the cost that implies, or the tokens and the design record should name the
 system stack they actually use. Not resolved here.
+
+## 2026-09-08 — The declared typefaces are now actually loaded
+
+`DESIGN.md` named Instrument Serif and Instrument Sans, and the tokens set them,
+but nothing loaded either, so every render fell through to the system stack.
+
+Loading them needed two things, not one. The obvious part is the stylesheet link
+and the preconnects. The part that fails silently is the Content Security
+Policy: Hydrogen sets one, and a font host absent from it is blocked with no
+visible error — the page simply renders in the fallback and looks fine. The
+origins now live in `tokens.fontSource` beside the stylesheet, `entry.server.tsx`
+feeds them into `styleSrc` and `fontSrc`, and validation rejects a source whose
+origin is not in the list, so the two cannot drift apart.
+
+### The cost, measured rather than assumed
+
+Three Lighthouse runs each on the same build, with and without the source:
+
+| | Performance | LCP | CLS | FCP |
+|---|---|---|---|---|
+| With fonts | 97, 97, 97 | 2.0-2.1s | 0.001 | 2.0s |
+| Without fonts | 97, 97, 97 | 2.1-2.2s | 0 | 2.0-2.1s |
+
+No measurable cost. `display=swap` plus preconnect means the fallback paints
+immediately, and the largest contentful element is the hero image rather than
+text, so the swap never gates it.
+
+### Verified as rendering, not merely downloading
+
+`scripts/check-fonts.mjs` measures the wordmark against the same string in the
+fallback stack: 48px in Instrument Serif against 59px in Georgia. A face can
+download and still not be applied, so `document.fonts.check` alone is not
+evidence. It also asserts no font request was blocked.
