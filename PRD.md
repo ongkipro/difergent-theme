@@ -242,13 +242,13 @@ catalog, pricing, inventory, discounts, tax, shipping, payment, and checkout.
   driven composition through metaobjects is a later decision, not a v1 hedge.
 
 ## Milestones
-- [ ] v0.1 — Skeleton in place, configuration contract enforced, tokens flowing
+- [x] v0.1 — Skeleton in place, configuration contract enforced, tokens flowing
       to CSS, home route composing from configuration.
-- [ ] v0.2 — Collection, product, cart, and search routes complete against a
+- [x] v0.2 — Collection, product, cart, and search routes complete against a
       real store.
-- [ ] v0.3 — SEO, structured data, analytics consent, sitemap, error boundaries,
+- [x] v0.3 — SEO, structured data, analytics consent, sitemap, error boundaries,
       hazard guards.
-- [ ] v0.4 — Placeholder assets, runbooks, route map, theming guide, health
+- [x] v0.4 — Placeholder assets, runbooks, route map, theming guide, health
       probes, automated checks.
 - [ ] v1.0 — Performance budget met, accessibility floor enforced, in-app
       browser path verified on a real phone, runbooks written, automated checks
