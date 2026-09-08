@@ -14,7 +14,10 @@ interface FooterProps {
  * social values are omitted rather than rendered as dead links.
  */
 export function Footer({header}: FooterProps) {
-  const shopName = header?.shop?.name || config.brand.name;
+  // The wordmark is store-owned identity from config/brand.ts, not the Shopify
+  // store name. A merchant's admin name is an internal label ("Acme Test 2"),
+  // and it is not the mark they want on their storefront.
+  const shopName = config.brand.name;
   const socials = Object.entries(config.brand.social).filter(([, href]) => href);
   const {email, phone, whatsapp} = config.brand.contact;
 

@@ -238,6 +238,11 @@ decision away from the reader.
 The wordmark is the logo. A text wordmark scales, translates, stays legible at
 any size, and costs a store nothing to supply, which an image logo does not.
 
+It comes from `config/brand.ts`, not from the Shopify store name. The name a
+merchant types into their admin is an internal label; the mark on the storefront
+is a brand decision, and it belongs with the other brand decisions. One word
+works best: it centres cleanly and leaves the utilities room at every width.
+
 On mobile the header is one 56px row: a menu control on the left, the wordmark
 centred, search and cart on the right. Centring is achieved by giving the two
 side clusters the same fixed basis rather than by letting the grid size them.

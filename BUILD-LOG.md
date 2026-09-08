@@ -415,3 +415,18 @@ wrong reason is worse than no check.
 keeps at least 8px of air from the nearest control, and no control falls under
 44px. Home on a production build: performance 97, accessibility 100, best
 practices 100, SEO 100, LCP 2.0s, CLS 0.
+
+## 2026-09-08 — The wordmark comes from configuration
+
+The header and footer read the Shopify store name first and fell back to
+`config/brand.ts`. That was backwards. A merchant's admin name is an internal
+label, and on the demo store it rendered as "Hydrogen Demo Store", a
+three-word name that forced the header into its truncation path at 320 and
+360px.
+
+The wordmark is brand identity, so it belongs with the other brand decisions in
+`config/brand.ts`. With the configured single word, clipping disappears at every
+width and the air between the wordmark and the nearest control goes from 8px to
+21px at 320px, and from 13px to 54px at 390px.
+
+`scripts/check-header.mjs`: 7 of 7 widths, no clipping anywhere.

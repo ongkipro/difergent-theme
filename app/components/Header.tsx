@@ -23,7 +23,10 @@ interface HeaderProps {
  */
 export function Header({header, cart}: HeaderProps) {
   const {open} = useAside();
-  const shopName = header?.shop?.name || config.brand.name;
+  // The wordmark is store-owned identity from config/brand.ts, not the Shopify
+  // store name. A merchant's admin name is an internal label ("Acme Test 2"),
+  // and it is not the mark they want on their storefront.
+  const shopName = config.brand.name;
   // Both side clusters share this basis so the wordmark stays centred; it
   // tracks the number of utility controls actually rendered.
   const sideBasis = config.features.predictiveSearch

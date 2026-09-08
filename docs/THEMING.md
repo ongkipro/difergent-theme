@@ -14,6 +14,12 @@ repeats a value, so the two cannot drift apart.
 details, social links. Empty contact and social values are omitted from the
 footer rather than rendered as dead links.
 
+`name` is the wordmark shown in the header and footer. It comes from here, not
+from the Shopify store name: a merchant's admin name is an internal label, often
+something like "Acme Test 2", and it is not the mark they want on a storefront.
+Short names work best; a long one truncates rather than wrapping the header onto
+a second row.
+
 `publicHost` matters beyond display: canonical URLs are built from it, and
 `robots.txt` disallows every host that does not match it, which is what keeps a
 preview deployment out of a search index.
