@@ -63,13 +63,10 @@ trade.
 
 ### Blocked
 
-No Shopify Storefront API token exists on this machine: `petcue/.env` defines
-the key with an empty value and no `elfy.my` project is present. Development
-runs against mock.shop through an env file outside the repository
-(`--env-file`), because the repository `.env` is protected by the secret gate
-and cannot be edited from here. Real-store verification — checkout handoff,
-market currency switching, notification templates — stays blocked until a token
-is supplied.
+No Shopify Storefront API token was available on the build machine, so
+development ran against mock.shop through an env file outside the repository
+(`--env-file`). Real-store verification — checkout handoff, market currency
+switching, notification templates — stayed blocked until a token was supplied.
 
 ## 2026-09-08 — Commerce routes, shell, SEO, measured verification
 

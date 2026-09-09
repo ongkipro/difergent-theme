@@ -63,9 +63,7 @@ build, a marketing tag loaded without consent, and the consent gate never
 reacted when consent was granted. All three are fixed and verified.
 
 All four blockers reduce to one missing input: a Shopify Storefront API token.
-`petcue/.env` defines the key with an empty value, and no `elfy.my` project
-exists on this machine. Local verification runs against mock.shop through an env
-file outside the repository, because the repository `.env` is protected by the
-secret gate.
+No Storefront API token was available locally, so verification ran against
+mock.shop through an env file kept outside the repository.
 
 Nothing has been committed or pushed. Nothing has been deployed.
